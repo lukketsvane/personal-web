@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MDXRemote } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
+import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
 import OutgoingLink from './outgoing-link'
 import { formatDate } from '@/lib/utils'
+import { cn } from "@/lib/utils"
 
 interface Post {
   title: string
@@ -41,139 +43,23 @@ const categories = [
   { label: "Dev", value: "dev" },
 ]
 
-const TimelineNode = ({ type }: { type: string }) => {
-  const typeColor = contentTypes.find(t => t.value === type)?.color || "bg-gray-500"
-  return (
-    <div className={`absolute left-0 w-4 h-4 rounded-full -translate-x-1/2 ${typeColor} border-2 border-white dark:border-gray-900`} />
-  )
-}
-
-const TimelineConnector = () => (
-  <div className="absolute left-0 w-0.5 h-full bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
-)
-
-const PostItem = ({ post, isExpanded, onToggle }: { 
-  post: Post
-  isExpanded: boolean
-  onToggle: () => void 
-}) => {
-  const [serializedContent, setSerializedContent] = useState<any>(null)
-
-  useEffect(() => {
-    if (isExpanded && !serializedContent) {
-      serialize(post.content).then(setSerializedContent)
-    }
-  }, [isExpanded, post.content, serializedContent])
-
-  const typeColor = contentTypes.find(t => t.value === post.type)?.color || "bg-gray-500"
-
-  return (
-    <div className="relative pl-8 pb-8">
-      <TimelineNode type={post.type} />
-      <TimelineConnector />
-      <motion.article 
-        className="relative rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
-        onClick={onToggle}
-        initial={false}
-        animate={{ 
-          backgroundColor: isExpanded ? "#f0f9ff" : "transparent",
-        }}
-        transition={{
-          type: "tween",
-          ease: "easeInOut",
-          duration: 0.2
-        }}
-      >
-        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          {formatDate(post.date)}
-        </div>
-        <motion.h2 
-          className={`text-lg font-semibold mb-1 ${typeColor.replace('bg-', 'text-')}`}
-          animate={{ 
-            color: isExpanded ? typeColor.replace('bg-', 'text-') : "inherit"
-          }}
-          transition={{
-            type: "tween",
-            ease: "easeInOut",
-            duration: 0.2
-          }}
-        >
-          {post.title}
-        </motion.h2>
-        {post.type === "books" && post.coverimage && (
-          <div className="my-4">
-            <Image
-              src={post.coverimage}
-              alt={`Cover for ${post.title}`}
-              width={120}
-              height={180}
-              className="rounded-md shadow-md"
-            />
-          </div>
-        )}
-        <motion.p 
-          className="text-gray-600 dark:text-gray-300 mb-2 text-sm"
-          animate={{ opacity: isExpanded ? 0.7 : 1 }}
-          transition={{
-            type: "tween",
-            ease: "easeInOut",
-            duration: 0.2
-          }}
-        >
-          {post.description}
-        </motion.p>
-        <div className="flex flex-wrap gap-1 mb-2">
-          {Array.isArray(post.tags) ? post.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs px-2 py-0.5">
-              {tag}
-            </Badge>
-          )) : post.tags && (
-            <Badge variant="secondary" className="text-xs px-2 py-0.5">
-              {post.tags}
-            </Badge>
-          )}
-        </div>
-        {post.url && (
-          <OutgoingLink href={post.url}>
-            Visit {post.type === "outgoing_links" ? "Link" : post.type}
-          </OutgoingLink>
-        )}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{
-                type: "tween",
-                ease: "easeInOut",
-                duration: 0.2
-              }}
-              className="overflow-hidden mt-2"
-            >
-              <div className="prose dark:prose-invert max-w-none text-sm">
-                {serializedContent && <MDXRemote {...serializedContent} />}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.article>
-    </div>
-  )
-}
-
-const FilterButton = ({ label, isActive, onClick, color }: { label: string; isActive: boolean; onClick: () => void; color?: string }) => (
+const FilterButton = ({ label, isActive, onClick, color }: { 
+  label: string
+  isActive: boolean
+  onClick: () => void
+  color?: string 
+}) => (
   <Button
     variant={isActive ? "default" : "outline"}
     size="sm"
     onClick={onClick}
-    className={`text-xs px-2 py-1 h-auto ${isActive ? color : ''}`}
+    className={cn("text-xs px-3 py-1 h-auto", isActive && color)}
   >
     {label}
   </Button>
 )
 
-export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
+export default function MDXBlog({ initialPosts = [] }: { initialPosts?: Post[] }) {
   const [posts] = useState<Post[]>(initialPosts)
   const [search, setSearch] = useState("")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
@@ -192,10 +78,10 @@ export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
   }, [posts, search, selectedTypes, selectedCategories])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 p-4">
-      <aside className="w-full lg:w-64 space-y-6">
-        <div className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">Type</h2>
+    <div className="flex flex-col lg:flex-row gap-4 p-4">
+      <aside className="w-full lg:w-48 space-y-3">
+        <div className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Type</h2>
           <div className="flex flex-wrap gap-2">
             {contentTypes.map((type) => (
               <FilterButton
@@ -214,8 +100,8 @@ export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
             ))}
           </div>
         </div>
-        <div className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase text-gray-500 dark:text-gray-400">Categories</h2>
+        <div className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Categories</h2>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <FilterButton
@@ -234,7 +120,7 @@ export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
           </div>
         </div>
       </aside>
-      <main className="flex-1 space-y-6">
+      <main className="flex-1 space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <Input
@@ -245,12 +131,8 @@ export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
           />
         </div>
         <motion.div 
-          className="relative mt-8 pl-16"
-          transition={{
-            type: "tween",
-            ease: "easeInOut",
-            duration: 0.2
-          }}
+          className="relative mt-4"
+          transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
         >
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
@@ -266,6 +148,122 @@ export default function MDXBlog({ initialPosts }: { initialPosts: Post[] }) {
           )}
         </motion.div>
       </main>
+    </div>
+  )
+}
+
+const TimelineConnector = () => (
+  <div className="absolute left-0 w-0.5 top-5 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
+)
+
+const TimelineNode = ({ type }: { type: string }) => {
+  const typeColor = contentTypes.find(t => t.value === type)?.color || "bg-gray-500"
+  return (
+    <div className={cn(
+      "absolute left-0 top-1 w-4 h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
+      typeColor
+    )} />
+  )
+}
+
+
+const PostItem = ({ post, isExpanded, onToggle }: { 
+  post: Post
+  isExpanded: boolean
+  onToggle: () => void 
+}) => {
+  const [serializedContent, setSerializedContent] = useState<any>(null)
+
+  useEffect(() => {
+    if (isExpanded && !serializedContent) {
+      serialize(post.content, { 
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          format: 'mdx',
+          development: false,
+        },
+        parseFrontmatter: true,
+      }).then(setSerializedContent)
+    }
+  }, [isExpanded, post.content, serializedContent])
+
+  const typeColor = contentTypes.find(t => t.value === post.type)?.color || "bg-gray-500"
+
+  return (
+    <div className="relative grid grid-cols-[auto,1fr] gap-4">
+      <div className="text-right text-xs text-gray-500 dark:text-gray-400 pt-1 pr-4 w-24">
+        {new Date(post.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+      </div>
+      <div className="relative">
+        <TimelineNode type={post.type} />
+        <TimelineConnector />
+        <div className="pb-8">
+          <motion.article 
+            className={cn(
+              "relative rounded-lg p-4 cursor-pointer transition-all", 
+              isExpanded ? "bg-blue-50 dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+            )}
+            onClick={onToggle}
+            initial={false}
+            animate={{ backgroundColor: isExpanded ? "#f0f9ff" : "transparent" }}
+            transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
+          >
+            <h2 className="text-lg font-semibold mb-1">{post.title}</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-2 text-sm">
+              {post.description}
+            </p>
+            <div className="flex gap-2 mb-2">
+              {Array.isArray(post.tags) 
+                ? post.tags.slice(0, 2).map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))
+                : post.tags && (
+                    <Badge variant="secondary" className="text-xs">
+                      {post.tags}
+                    </Badge>
+                  )
+              }
+              {Array.isArray(post.tags) && post.tags.length > 2 && (
+                <span className="text-xs text-gray-500">+{post.tags.length - 2}</span>
+              )}
+            </div>
+            {post.url && (
+              <OutgoingLink href={post.url}>
+                Visit {post.type === "outgoing_links" ? "Link" : post.type}
+              </OutgoingLink>
+            )}
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
+                  className="overflow-hidden mt-2"
+                >
+                  <div className="prose dark:prose-invert max-w-none text-sm">
+                    {serializedContent && (
+                      <MDXRemote
+                        {...serializedContent}
+                        components={{
+                          h1: (props) => <h1 {...props} className="text-2xl font-bold mt-4 mb-2" />,
+                          h2: (props) => <h2 {...props} className="text-xl font-semibold mt-3 mb-2" />,
+                          h3: (props) => <h3 {...props} className="text-lg font-medium mt-2 mb-1" />,
+                          h4: (props) => <h4 {...props} className="text-base font-medium mt-2 mb-1" />,
+                          h5: (props) => <h5 {...props} className="text-sm font-medium mt-2 mb-1" />,
+                          h6: (props) => <h6 {...props} className="text-xs font-medium mt-2 mb-1" />,
+                        }}
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.article>
+        </div>
+      </div>
     </div>
   )
 }
