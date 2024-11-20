@@ -6,7 +6,7 @@ import { Search } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { MDXRemote } from 'next-mdx-remote'
+import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -91,7 +91,7 @@ const PostItem = ({ post, isExpanded, onToggle }: {
   isExpanded: boolean
   onToggle: () => void 
 }) => {
-  const [serializedContent, setSerializedContent] = useState<ReturnType<typeof serialize> | null>(null)
+  const [serializedContent, setSerializedContent] = useState<MDXRemoteSerializeResult | null>(null)
 
   useEffect(() => {
     if (isExpanded && !serializedContent) {
@@ -102,7 +102,7 @@ const PostItem = ({ post, isExpanded, onToggle }: {
           development: false,
         },
         parseFrontmatter: true,
-      }).then(setSerializedContent)
+      }).then((result) => setSerializedContent(result))
     }
   }, [isExpanded, post.content, serializedContent])
 

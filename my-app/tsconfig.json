@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "scripts/check-frontmatter.js"  ],
+, "scripts/check-frontmatter.js", "app/[type]/[slug]/page.tsx.bak"  ],
   "exclude": [
     "node_modules"
   ]
