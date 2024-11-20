@@ -1,0 +1,65 @@
+---
+title: Web Design Keys
+description: An interactive 3D keyboard visualization showcasing fullstack development concepts through isometric key designs.
+date: 2024-11-20
+tags: public design 3d
+type: public
+category: design
+url: https://visittkort.v0.build/
+---
+
+import Spline from '@splinetool/react-spline/next'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+
+export const WebDesignKeys = () => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isDark, setIsDark] = useState(false)
+  
+  const handleClick = () => {
+    setIsDark(!isDark)
+  }
+
+  return (
+    <main className="w-full min-h-screen bg-grid-small-black/[0.2] relative flex items-center justify-center">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading 3D Scene...</p>
+          </div>
+        </div>
+      )}
+      
+      <div 
+        className="w-full max-w-5xl aspect-square cursor-pointer" 
+        onClick={handleClick}
+      >
+        <Spline
+          scene={isDark 
+            ? "https://prod.spline.design/dark-theme-scene-id/scene.splinecode"
+            : "https://prod.spline.design/h8pzqQm6wqekjlZU/scene.splinecode"
+          }
+          onLoad={() => setIsLoading(false)}
+          className="w-full h-full"
+        />
+      </div>
+    </main>
+  )
+}
+
+# Web Design Keys
+
+<WebDesignKeys />
+
+An interactive 3D visualization exploring the intersection of web development and design through keyboard-inspired elements. Click or tap the scene to toggle between light and dark themes. Each key represents a core aspect of fullstack development, creating a playful and informative isometric layout.
+
+## Technical Details
+
+- Created using Spline for 3D modeling and interactions
+- Interactive theme switching
+- Isometric design perspective
+- Custom material properties for each key
+- Responsive embedding for web display
+
+The visualization features keyboard keys representing different aspects of web development, available in both light and dark themes for different viewing preferences.
