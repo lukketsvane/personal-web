@@ -11,6 +11,12 @@ import { serialize } from 'next-mdx-remote/serialize'
 import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
+import dynamic from 'next/dynamic'
+
+const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
+  ssr: false,
+  loading: () => <p>Loading 3D Scene...</p>
+})
 
 interface Post {
   title: string
@@ -184,6 +190,10 @@ const PostItem = ({ post, isExpanded, onToggle }: {
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
+                    </div>
+                  ) : post.slug === "web-design-keys" ? (
+                    <div className="w-full aspect-[4/5] rounded-lg overflow-hidden">
+                      <WebDesignKeys />
                     </div>
                   ) : (
                     <div className="prose dark:prose-invert max-w-none text-sm">
