@@ -91,7 +91,7 @@ const PostItem = ({ post, isExpanded, onToggle }: {
   isExpanded: boolean
   onToggle: () => void 
 }) => {
-  const [serializedContent, setSerializedContent] = useState<any>(null)
+  const [serializedContent, setSerializedContent] = useState<ReturnType<typeof serialize> | null>(null)
 
   useEffect(() => {
     if (isExpanded && !serializedContent) {

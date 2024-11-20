@@ -1,12 +1,21 @@
 import fs from 'fs'
 import path from 'path'
+import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { compileMDX } from 'next-mdx-remote/rsc'
-import { notFound } from 'next/navigation'
 
-export async function generateStaticParams() {
+type Params = {
+  type: string
+  slug: string
+}
+
+interface PageProps {
+  params: Params
+}
+
+export async function generateStaticParams(): Promise<Params[]> {
   const contentTypes = ['writing', 'books', 'projects', 'outgoing_links']
-  const paths = []
+  const paths: Params[] = []
 
   for (const type of contentTypes) {
     const filesPath = path.join(process.cwd(), '..', type)
@@ -25,7 +34,7 @@ export async function generateStaticParams() {
   return paths
 }
 
-export default async function Post({ params }: { params: { type: string; slug: string } }) {
+export default async function Post({ params }: PageProps) {
   const filePath = path.join(process.cwd(), '..', params.type, `${params.slug}.mdx`)
 
   if (!fs.existsSync(filePath)) {
@@ -33,7 +42,7 @@ export default async function Post({ params }: { params: { type: string; slug: s
   }
 
   const source = fs.readFileSync(filePath, 'utf8')
-  const { content, frontmatter } = await compileMDX({
+  const { content, frontmatter } = await compileMDX<{ title: string; date: string }>({
     source,
     options: { parseFrontmatter: true },
   })
