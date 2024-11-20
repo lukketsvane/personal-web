@@ -26,8 +26,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Post({ params }: { params: { type: string; slug: string } }) {
-  const { type, slug } = params
-  const filePath = path.join(process.cwd(), '..', type, `${slug}.mdx`)
+  const filePath = path.join(process.cwd(), '..', params.type, `${params.slug}.mdx`)
 
   if (!fs.existsSync(filePath)) {
     notFound()
