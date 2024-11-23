@@ -1,0 +1,79 @@
+---
+title: "Utforsking av Form: Geometriske Studiar"
+description: "Ein utforskingsreise gjennom spomenik-inspirert parametrisk design."
+date: "2024-11-23"
+tags:
+  - "design"
+  - "3D modeling"
+  - "parametric design"
+  - "spomenik"
+type: "writing"
+category: "Geometriske Studiar"
+---
+
+import { Canvas } from "@react-three/fiber"
+import { OrbitControls, useGLTF, Environment } from "@react-three/drei"
+import Image from "next/image"
+
+function Model({ url }) {
+  const { scene } = useGLTF(url)
+  return <primitive object={scene} />
+}
+
+## Utforsking av Form: Geometriske Studiar
+
+Ein utforskingsreise gjennom **spomenik-inspirert parametrisk design**, der vi kombinerer moderne teknologiar med klassiske arkitektoniske prinsipp for å skape unike former og strukturar.
+
+### Spomenik-Inspirerte Modellar
+
+#### Modell 1: Spomenik-Inspirert Geometri
+
+<Canvas camera={{ position: [0, 0, 2] }}>
+  <ambientLight intensity={0.5} />
+  <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+  <Model url="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/models/spaa.glb" />
+  <Environment preset="studio" />
+  <OrbitControls autoRotate />
+</Canvas>
+
+#### Modell 2: Salt og Pepar Design
+
+<Canvas camera={{ position: [0, 0, 2] }}>
+  <ambientLight intensity={0.5} />
+  <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+  <Model url="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/models/salt_pepper.glb" />
+  <Environment preset="studio" />
+  <OrbitControls autoRotate />
+</Canvas>
+
+### Bilete frå Prosessen
+
+#### Spomenik Bilete
+
+<Image
+  src="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/images/spom_1.png"
+  alt="Spomenik Arkitektonisk Portal"
+  width={600}
+  height={400}
+/>
+
+<Image
+  src="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/images/spom_2.png"
+  alt="Spomenik Diagonale Studiar"
+  width={600}
+  height={400}
+/>
+
+<Image
+  src="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/images/spom_3.png"
+  alt="Bølgjande Volum"
+  width={600}
+  height={400}
+/>
+
+<Image
+  src="https://raw.githubusercontent.com/lukketsvane/salt-og-pepar.iverfinne.no/main/public/images/spom_4.png"
+  alt="Spomenik Abstraksjon"
+  width={600}
+  height={400}
+/>

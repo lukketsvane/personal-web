@@ -54,3 +54,4 @@ export default function MDXBlogWrapper() {
     <p>No posts found.</p>
   )
 }
+
