@@ -58,7 +58,7 @@ interface MDXCardProps {
 }
 
 const TimelineConnector = () => (
-  <div className="absolute left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
+  <div className="hidden sm:block absolute left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
 )
 
 const TimelineNode = ({ type }: { type: string }) => {
@@ -71,7 +71,7 @@ const TimelineNode = ({ type }: { type: string }) => {
   
   return (
     <div className={cn(
-      "absolute left-0 top-[1.125rem] w-4 h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
+      "hidden sm:block absolute left-0 top-[1.125rem] w-4 h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
       typeColors[type as keyof typeof typeColors] || "bg-gray-500"
     )} />
   )
@@ -95,9 +95,9 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   }
 
   return (
-    <div className="relative grid grid-cols-[auto,1fr] lg:gap-4 max-w-full">
-      <div className="hidden lg:block text-right pt-5 pr-8 w-24 shrink-0">
-        <time className="text-lg font-semibold text-muted-foreground">
+    <div className="relative grid grid-cols-[1fr] sm:grid-cols-[auto,1fr] gap-4 max-w-full">
+      <div className="sm:text-right sm:pt-5 sm:pr-4 sm:w-24 shrink-0 order-2 sm:order-1">
+        <time className="text-sm sm:text-lg font-semibold text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', { 
             month: '2-digit', 
             day: '2-digit', 
@@ -105,7 +105,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
           })}
         </time>
       </div>
-      <div className="relative min-w-0">
+      <div className="relative min-w-0 order-1 sm:order-2">
         <TimelineNode type={post.type} />
         <TimelineConnector />
         <div className="pb-8 pt-0">
@@ -124,13 +124,6 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             <div className="flex items-start gap-4 mb-4">
               <div className="flex-1">
                 <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
-                <time className="block lg:hidden text-sm text-muted-foreground mb-2">
-                  {new Date(post.date).toLocaleDateString('en-US', { 
-                    month: '2-digit', 
-                    day: '2-digit', 
-                    year: 'numeric' 
-                  })}
-                </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
               </div>
               {post.type === "books" && post.icon && (
