@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useEffect, useState } from 'react'
 import MDXBlog from '@/components/mdx-blog'
@@ -12,6 +12,7 @@ interface Post {
   type: "writing" | "books" | "projects" | "outgoing_links"
   image?: string
   content: string
+  thumbnails?: { src: string; alt: string }[]
 }
 
 export default function MDXBlogWrapper() {
@@ -45,7 +46,7 @@ export default function MDXBlogWrapper() {
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>
+    return <div>{error}</div>
   }
 
   return posts.length > 0 ? (
