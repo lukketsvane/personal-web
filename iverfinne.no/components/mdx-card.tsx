@@ -95,8 +95,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   }
 
   return (
-    <div className="relative grid grid-cols-[auto,1fr] gap-4 max-w-full">
-      <div className="text-right pt-5 pr-8 w-24 shrink-0">
+    <div className="relative grid grid-cols-[auto,1fr] lg:gap-4 max-w-full">
+      <div className="hidden lg:block text-right pt-5 pr-8 w-24 shrink-0">
         <time className="text-lg font-semibold text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', { 
             month: '2-digit', 
@@ -124,6 +124,13 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             <div className="flex items-start gap-4 mb-4">
               <div className="flex-1">
                 <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
+                <time className="block lg:hidden text-sm text-muted-foreground mb-2">
+                  {new Date(post.date).toLocaleDateString('en-US', { 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    year: 'numeric' 
+                  })}
+                </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
               </div>
               {post.type === "books" && post.icon && (

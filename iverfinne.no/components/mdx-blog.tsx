@@ -86,7 +86,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   const [search, setSearch] = useState("")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [expandedPost, setExpandedPost] = useState<string | null>(null)
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [serializedContents, setSerializedContents] = useState<Record<string, MDXRemoteSerializeResult | null>>({})
   const [error, setError] = useState<string | null>(null)
   const [showAllTags, setShowAllTags] = useState(false)
@@ -111,7 +111,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
 
   useEffect(() => {
     const serializeContent = async (slug: string, content: string) => {
-      if (!serializedContents[slug] && expandedPost === slug) {
+      if (!serializedContents[slug] && expandedPosts.has(slug)) {
         try {
           const result = await serialize(content, {
             mdxOptions: {
@@ -129,13 +129,13 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
       }
     }
 
-    if (expandedPost) {
-      const post = posts.find(p => p.slug === expandedPost)
+    expandedPosts.forEach(slug => {
+      const post = posts.find(p => p.slug === slug)
       if (post?.content) {
         serializeContent(post.slug, post.content)
       }
-    }
-  }, [expandedPost, posts, serializedContents])
+    })
+  }, [expandedPosts, posts, serializedContents])
 
   const filteredPosts = useMemo(() => {
     try {
@@ -157,17 +157,33 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
 
   const handlePostToggle = (slug: string) => {
     try {
-      setExpandedPost(expandedPost === slug ? null : slug)
+      setExpandedPosts(prev => {
+        const next = new Set(prev)
+        if (next.has(slug)) {
+          next.delete(slug)
+        } else {
+          next.add(slug)
+        }
+        return next
+      })
     } catch (err) {
       console.error('Error toggling post:', err)
       setError('Failed to expand post')
     }
   }
 
+  if (error) {
+    return (
+      <div className="p-4 text-red-500 dark:text-red-400">
+        {error}
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-screen overflow-hidden">
       <aside className="w-full lg:w-48 space-y-4 shrink-0">
-        <div className="">
+        <div className="space-y-2">
           <h2 className="text-xs font-medium text-gray-500 lowercase">type</h2>
           <div className="flex flex-wrap gap-1.5">
             {contentTypes.map((type) => (
@@ -240,7 +256,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
               <MDXCard
                 key={post.slug}
                 post={post}
-                isExpanded={expandedPost === post.slug}
+                isExpanded={expandedPosts.has(post.slug)}
                 onToggle={() => handlePostToggle(post.slug)}
                 serializedContent={serializedContents[post.slug]}
               />
