@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 
 const APP_NAME = 'iverfinne.no'
 const APP_DEFAULT_TITLE = 'iverfinne.no'
@@ -47,23 +49,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/GeistVF.woff"
-          as="font"
-          type="font/woff"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/GeistMonoVF.woff"
-          as="font"
-          type="font/woff"
-          crossOrigin="anonymous"
-        />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>{children}</body>
     </html>
   )
