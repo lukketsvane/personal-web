@@ -96,7 +96,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
   return (
     <div className="relative grid grid-cols-[auto,1fr] gap-4 max-w-full">
-      <div className="text-right pt-5 pr-4 w-24 shrink-0">
+      <div className="text-right pt-5 pr-8 w-24 shrink-0">
         <time className="text-lg font-semibold text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', { 
             month: '2-digit', 
