@@ -51,14 +51,14 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          href="./fonts/GeistVF.woff"
+          href="/fonts/GeistVF.woff"
           as="font"
           type="font/woff"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="./fonts/GeistMonoVF.woff"
+          href="/fonts/GeistMonoVF.woff"
           as="font"
           type="font/woff"
           crossOrigin="anonymous"

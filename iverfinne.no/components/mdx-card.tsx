@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
 import dynamic from 'next/dynamic'
 import { ImageGallery } from "@/components/image-gallery"
+import { ResponsiveIframe } from "@/components/responsive-iframe"
 
 const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
   ssr: false,
@@ -26,6 +27,12 @@ const mdxComponents = {
   pre: (props: any) => <pre {...props} className="whitespace-pre-wrap break-words" />,
   code: (props: any) => <code {...props} className="whitespace-pre-wrap break-words" />,
   ImageGallery: ImageGallery,
+  iframe: (props: any) => (
+    <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden mb-4">
+      <iframe {...props} className="absolute inset-0 w-full h-full border-0" />
+    </div>
+  ),
+  ResponsiveIframe: ResponsiveIframe,
 }
 
 interface Post {
@@ -180,7 +187,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         {...serializedContent}
                         components={{
                           ...mdxComponents,
-                          ImageGallery
+                          ImageGallery,
+                          WebDesignKeys
                         }}
                       />
                     )}
