@@ -51,7 +51,7 @@ interface MDXCardProps {
 }
 
 const TimelineConnector = () => (
-  <div className="absolute left-0 w-0.5 top-5 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
+  <div className="absolute left-0 w-0.5 top-7 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
 )
 
 const TimelineNode = ({ type }: { type: string }) => {
@@ -64,15 +64,13 @@ const TimelineNode = ({ type }: { type: string }) => {
   
   return (
     <div className={cn(
-      "absolute left-0 top-1 w-4 h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
+      "absolute left-0 top-[1.375rem] w-4 h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
       typeColors[type as keyof typeof typeColors] || "bg-gray-500"
     )} />
   )
 }
 
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
-  console.log('MDXCard thumbnails:', post.thumbnails) // Debug log
-
   const tagColors = useMemo(() => {
     if (!Array.isArray(post.tags)) return {}
     return post.tags.reduce((acc, tag) => {
@@ -91,8 +89,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
   return (
     <div className="relative grid grid-cols-[auto,1fr] gap-4 max-w-full">
-      <div className="text-right pt-1 pr-4 w-24 shrink-0">
-        <time className="text-base font-semibold text-gray-900 dark:text-gray-100">
+      <div className="text-right pt-5 pr-4 w-24 shrink-0">
+        <time className="text-sm text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', { 
             month: '2-digit', 
             day: '2-digit', 
@@ -103,7 +101,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       <div className="relative min-w-0">
         <TimelineNode type={post.type} />
         <TimelineConnector />
-        <div className="pb-8">
+        <div className="pb-8 pt-1">
           <motion.article 
             className={cn(
               "relative rounded-lg p-4 cursor-pointer transition-all",
@@ -116,7 +114,11 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
           >
             {/* Title Section */}
-            <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="flex-1">
+                <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
+                <p className="text-muted-foreground text-sm">{post.description}</p>
+              </div>
               {post.type === "books" && post.icon && (
                 <div className="relative w-16 h-16 shrink-0">
                   <Image
@@ -129,32 +131,26 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   />
                 </div>
               )}
-              <h2 className="text-lg font-semibold break-words">{post.title}</h2>
             </div>
-            
-            {/* Description */}
-            <p className="text-gray-600 dark:text-gray-300 mb-2 text-sm break-words">
-              {post.description}
-            </p>
 
-            {/* Thumbnails - Only shown when not expanded */}
-{!isExpanded && post.thumbnails && post.thumbnails.length > 0 && (
-  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-    {post.thumbnails.slice(0, 4).map((img, i) => (
-      <div 
-        key={`${post.slug}-thumb-${i}`}
-        className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
-      >
-        <Image
-          src={img.src}
-          alt={img.alt}
-          fill
-          className="object-cover"
-        />
-      </div>
-    ))}
-  </div>
-)}
+            {/* Thumbnails */}
+            {!isExpanded && post.thumbnails && post.thumbnails.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                {post.thumbnails.slice(0, 4).map((img, i) => (
+                  <div 
+                    key={`${post.slug}-thumb-${i}`}
+                    className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
+                  >
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Tags */}
             <div className="flex gap-2 flex-wrap">
@@ -176,7 +172,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                  className="overflow-hidden mt-2"
+                  className="overflow-hidden mt-4"
                 >
                   <div className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words">
                     {serializedContent && (

@@ -2,14 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/GeistVF.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMonoVF.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @layer base {
@@ -40,6 +46,7 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -68,56 +75,11 @@ body {
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold mb-2 mt-4;
-  }
-  h1 {
-    @apply text-3xl;
-  }
-  h2 {
-    @apply text-2xl;
-  }
-  h3 {
-    @apply text-xl;
-  }
-  h4 {
-    @apply text-lg;
-  }
-  h5 {
-    @apply text-base;
-  }
-  h6 {
-    @apply text-sm;
-  }
-  p {
-    @apply mb-4;
-  }
-  ul, ol {
-    @apply mb-4 pl-5;
-  }
-  ul {
-    @apply list-disc;
-  }
-  ol {
-    @apply list-decimal;
-  }
-  a {
-    @apply text-blue-600 hover:underline;
-  }
-  blockquote {
-    @apply border-l-4 border-gray-300 pl-4 italic my-4;
-  }
-  code {
-    @apply bg-gray-100 rounded px-1 py-0.5;
-  }
-  pre {
-    @apply bg-gray-100 rounded p-4 mb-4 overflow-x-auto;
-  }
+body {
+  font-family: 'Geist', Arial, Helvetica, sans-serif;
 }
+
+code, pre {
+  font-family: 'Geist Mono', monospace;
+}
+

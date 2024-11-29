@@ -1,3 +1,7 @@
+git add .
+git commit -am "fixed"
+git push origin main --force
+
 /workspaces/personal-web/
 └── iverfinne.no/
     ├── .eslintrc.json
