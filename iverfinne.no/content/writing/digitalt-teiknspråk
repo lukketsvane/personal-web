@@ -1,7 +1,7 @@
 ---
 title: Digitalt Teiknspråk - Korleis maskiner lærer å forstå ASL
 description: Ei utforsking av korleis vi byggjer system som kan kjenne att amerikansk teiknspråk (ASL) ved hjelp av maskinsyn og kunstig intelligens.
-date: 2024-12-02
+date: 2024-12-01
 ---
 
 Ein kan sjå på hendene som eit slags *digitalt alfabet*, der kvar bokstav er ein unik kombinasjon av fingerposisjonar og rørsler. Vi har utvikla eit system som kan sjå og forstå dette språket.
