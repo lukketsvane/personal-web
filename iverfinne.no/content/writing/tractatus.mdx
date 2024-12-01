@@ -1,0 +1,94 @@
+---
+title: "Tractatus: Visualizing Philosophical Hierarchy"
+description: "An interactive exploration of Wittgenstein's Tractatus using D3.js, React, and modern web technologies"
+date: "2024-12-02"
+tags: ["philosophy", "visualization", "d3js", "wittgenstein", "react"]
+type: "project"
+---
+
+In 1921, Ludwig Wittgenstein published his *Tractatus Logico-Philosophicus* - a work that would fundamentally reshape philosophical thinking. The text's unique hierarchical structure, with its precisely numbered propositions, almost seems to anticipate modern data structures. Our project brings this mathematical-philosophical masterpiece into the digital age through interactive visualization.
+
+> **Hierarchical Visualization**: The transformation of nested philosophical propositions into an explorable tree structure.
+> 
+> *Like the branches of a tree, each proposition grows from its parent, creating a natural taxonomy of thought.*
+
+## Technical Architecture
+
+The visualization employs three distinct layout algorithms, each offering a unique perspective on Wittgenstein's work:
+
+1. **Tree Layout**: Traditional hierarchical representation
+2. **Radial Layout**: Circular arrangement emphasizing relationships
+3. **Circle Packing**: Space-efficient nested visualization
+
+```typescript
+const TreeLayout = d3.tree<TractatusNode>()
+  .size([height, width - 200])
+  .nodeSize([60, 120]);
+
+type LayoutType = 'tree' | 'radial' | 'circle';
+```
+
+## Interactive Features
+
+The system implements several core interactions:
+
+**1. Navigation**
+- Keyboard navigation through propositions
+- Smooth transitions between nodes
+- Zoom and pan capabilities
+- Dynamic node expansion/collapse
+
+**2. Audio Integration**
+```typescript
+const playAudioAndMoveToNext = useCallback((node: D3Node) => {
+  const audioUrl = audioMap[node.data.key];
+  if (audioUrl) {
+    audioRef.current = new Audio(audioUrl);
+    audioRef.current.muted = isMuted;
+    audioRef.current.play();
+    // ... transition logic
+  }
+}, []);
+```
+
+**3. Bilingual Support**
+- Toggle between English and German texts
+- Synchronized audio narration
+- Preserved navigation state across languages
+
+> **Progressive Disclosure**: The interface reveals complexity gradually, allowing users to explore at their own pace.
+>
+> *This mirrors Wittgenstein's own layered approach to philosophical argumentation.*
+
+## Visual Design Philosophy
+
+The visualization employs a stark black and white palette, reflecting both modernist design principles and Wittgenstein's austere philosophical style. Node sizing and connection weights create a **visual hierarchy** that guides users through the philosophical structure:
+
+```typescript
+nodeEnter.append("circle")
+  .attr("r", (d: D3Node) => d === selectedNodeRef.current ? 10 : 8)
+  .style("fill", (d: D3Node) => {
+    if (d === selectedNodeRef.current) return "#000";
+    if (d.data.key === "1") return "#fff";
+    return d._children ? "#555" : "#999";
+  });
+```
+
+## Data Structure
+
+The project maintains a faithful representation of the Tractatus's hierarchical nature while adding modern interactive capabilities:
+
+```typescript
+interface TractatusNode {
+  key: string;
+  content: {
+    en: string;
+    de: string;
+  };
+  children?: TractatusNode[];
+}
+```
+
+This structure preserves Wittgenstein's original numbering system (1, 1.1, 1.1.1, etc.) while enabling dynamic exploration of his philosophical arguments. Each node contains both the original German text and its English translation, allowing for comparative study.
+
+The visualization becomes not just a reading tool but a new way to experience one of philosophy's most influential works - a bridge between Wittgenstein's logical atomism and the digital age's networked thinking.
