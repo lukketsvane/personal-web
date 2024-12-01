@@ -1,0 +1,67 @@
+---
+title: Digitalt Teiknspråk - Korleis maskiner lærer å forstå ASL
+description: Ei utforsking av korleis vi byggjer system som kan kjenne att amerikansk teiknspråk (ASL) ved hjelp av maskinsyn og kunstig intelligens.
+date: 2024-12-02
+---
+
+Ein kan sjå på hendene som eit slags *digitalt alfabet*, der kvar bokstav er ein unik kombinasjon av fingerposisjonar og rørsler. Vi har utvikla eit system som kan sjå og forstå dette språket.
+
+## Teiknspråkalfabetet visualisert
+
+<div className="grid grid-cols-3 md:grid-cols-6 gap-4 my-8">
+  {Object.entries(ASL_ALPHABET).map(([letter, data]) => (
+    <div key={letter} className="flex flex-col items-center border rounded p-2">
+      <img src={data.image} alt={`ASL-bokstav ${letter}`} className="w-24 h-24 object-contain"/>
+      <span className="text-lg font-bold mt-2">{letter}</span>
+    </div>
+  ))}
+</div>
+
+## Det tekniske grunnlaget
+
+Systemet vårt tolkar teiknspråk gjennom tre kjernekomponentar:
+
+> **Fingermønster**: Kvar bokstav har sitt eige *digitale fingeravtrykk* - ein unik kombinasjon av posisjonar og rørsler.  
+> *Ein moderne datamaskin kan lese desse mønstera like presist som menneskeauge.*
+
+```typescript
+interface FingerMønster {
+  tommel: string;
+  peikefinger: string;
+  langfinger: string;
+  ringfinger: string;
+  veslefinger: string;
+}
+```
+
+Systemet analyserer tre hovudtypar teikn:
+- **Stilleståande teikn**: Bokstavar som 'A' til 'E'
+- **Dynamiske teikn**: Teikn med rørsle som 'J' og 'Z'
+- **Orientering**: Korleis handflata er retta og plassert
+
+## Teknisk implementering
+
+```typescript
+interface HandPosisjon {
+  handflate: string;
+  orientering: string;
+  rørsle?: string;
+  kritiskePunkt: string[];
+}
+```
+
+Hovudfunksjonar:
+- Sanntids gestattkjenning
+- Rørslesporing
+- Handtering av brukarvariasjoner
+
+## Framtidsutsikter
+
+- Attkjenning av heile ord i teiknspråk
+- System for læring og tilbakemelding
+- Forbetringar med maskinlæring
+
+### Samanheng
+Dette systemet representerer ei bru mellom menneskeleg kommunikasjon og digital tolking. Det viser korleis mønster i menneskelege rørsler kan omsetjast til noko ein datamaskin kan forstå og reagere på.
+
+*Dette prosjektet er eit steg mot meir inkluderande teknologi, der grensene mellom ulike kommunikasjonsformer blir gradvis viska ut gjennom klok bruk av maskinsyn og kunstig intelligens.*
