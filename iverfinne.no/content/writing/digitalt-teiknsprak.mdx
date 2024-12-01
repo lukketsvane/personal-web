@@ -1,68 +1,125 @@
 ---
-title: Handsporing og teiknspråk i nettlesaren
-description: Ei utforsking av korleis me kan bruke maskinlæring til å tolke teiknspråk direkte i nettlesaren, og kva dette tyder for framtida til digital kommunikasjon.
-date: 2024-12-02
-tags: teiknspråk, maskinlæring, teknologi, kommunikasjon
-type: writing
+title: "Handsporing for teiknspråk: Ei teknisk djupdykking"
+description: "Implementasjon av eit ASL-attkjenningssystem ved bruk av maskinlæring og handsporing i nettlesaren"
+date: "2024-12-02"
+tags: ["teiknspråk", "maskinlæring", "yoha", "tensorflowjs", "handsporing"]
+type: "teknisk"
+category: "Maskinlæring"
 ---
 
-La oss utforske korleis ein datamaskin kan lære å forstå **teiknspråk** gjennom webkamera. Dette er ikkje berre ein teknisk prestasjon, men eit steg mot meir *inkluderande digital kommunikasjon*.
-
-## Visuell tolking av handteikn
-
-<div className="grid grid-cols-3 md:grid-cols-6 gap-4 my-8">
-  {Object.entries(ASL_ALPHABET).map(([letter, data]) => (
-    <div key={letter} className="flex flex-col items-center border rounded p-2">
-      <img src={data.image} alt={`ASL-bokstav ${letter}`} className="w-24 h-24 object-contain"/>
-      <span className="text-lg font-bold mt-2">{letter}</span>
-    </div>
-  ))}
-</div>
-
-> **Handsporing**: Ein teknologi som kan identifisere og følgje 21 nøkkelpunkt på menneskelege hender i sanntid.  
-> *Tenkjer på det som eit digitalt skjelett som følgjer kvar finger.*
-
-## Det digitale nervesystemet
-
-Systemet vårt kviler på tre grunnpillarar:
-
-1. **Posisjonsanalyse**: Tolkar korleis fingrane er plasserte i forhold til kvarandre
-2. **Rørsledeteksjon**: Følgjer handteikn som krev dynamiske rørsler
-3. **Mønsterattkjenning**: Samanliknar observerte teikn med kjende teiknmønster
-
-```typescript
-interface HandPosisjon {
-  handflate: string;     // Retning på handflata
-  orientering: string;   // Korleis handa er vend
-  rørsle?: string;       // For dynamiske teikn
-  kritiskePunkt: string[]; 
-}
-```
-
-Systemet kan skilje mellom tre hovudtypar teikn:
-- *Statiske teikn* som 'A' til 'E'
-- *Dynamiske teikn* som 'J' og 'Z'
-- *Samansette teikn* som kombinerer fleire posisjonar
+I kjernen av moderne teiknspråkattkjenning ligg **handsporing** - ein teknologi som omset handrørsler til digitale koordinatar. La oss dykke ned i korleis me implementerer dette i nettlesaren.
 
 ## Teknisk arkitektur
 
-> **Sanntidsanalyse**: Systemet prosesserer 30 bilete i sekundet og gir umiddelbar tilbakemelding.  
-> *Som å ha ein tolk som arbeider med lysets fart.*
+> **Handsporing**: Ein maskinlæringsmodell som identifiserer 21 nøkkelpunkt på ei hand i sanntid.  
+> *Kvart punkt er ein vektor i 3D-rommet (x, y, z).*
 
-I praksis fungerer det slik:
-1. Webkameraet fangar handrørslene dine
-2. **ML5.js** analyserer bileta i sanntid
-3. *Handpose-modellen* identifiserer nøkkelpunkt
-4. Systemet samanliknar med kjende teiknmønster
+Implementasjonen vår brukar **TensorFlow.js** som grunnmur, med ein tilpassa nevral modell for handsporing:
+
+```typescript
+interface HandLandmark {
+  x: number;  // x-koordinat i biletet
+  y: number;  // y-koordinat i biletet
+  z: number;  // djupne-estimat
+}
+
+class HandDetector {
+  private model: tf.GraphModel;
+  private readonly landmarkCount = 21;
+  
+  constructor() {
+    this.model = await tf.loadGraphModel('/models/handpose');
+  }
+
+  async detectHand(frame: ImageData): Promise<HandLandmark[]> {
+    const tensor = tf.browser.fromPixels(frame)
+      .expandDims(0)
+      .toFloat()
+      .div(255);
+    
+    const prediction = await this.model.predict(tensor);
+    return this.processLandmarks(prediction);
+  }
+}
+```
+
+## Attkjenning av teikn
+
+For å kjenne att spesifikke handteikn, implementerer me ein **tilstandsmaskin** som analyserer handposisjonen over tid:
+
+```typescript
+interface HandPosition {
+  landmarks: HandLandmark[];
+  orientation: 'palm_up' | 'palm_down' | 'palm_side';
+  motion: 'static' | 'dynamic';
+}
+
+class ASLDetector {
+  private static readonly MOTION_THRESHOLD = 50; // pikslar
+  private static readonly DETECTION_FRAMES = 10;
+  private positionHistory: HandPosition[] = [];
+  
+  detectSign(position: HandPosition): ASLSign | null {
+    this.positionHistory.push(position);
+    this.positionHistory = this.positionHistory
+      .slice(-this.DETECTION_FRAMES);
+    
+    if (this.isStaticSign(position)) {
+      return this.classifyStaticSign(position);
+    }
+    
+    return this.classifyDynamicSign(this.positionHistory);
+  }
+}
+```
+
+## Rørsleanalyse
+
+For dynamiske teikn som 'J' og 'Z' må me analysere rørslene over tid:
+
+```typescript
+interface MotionPattern {
+  path: Point[];
+  duration: number;
+  velocity: number;
+}
+
+private analyzeMotion(history: HandPosition[]): MotionPattern {
+  const path = history.map(p => ({
+    x: p.landmarks[8].x,  // peikefinger-tupp
+    y: p.landmarks[8].y
+  }));
+  
+  const duration = history.length * (1000 / 60); // ms
+  const velocity = this.calculatePathVelocity(path);
+  
+  return { path, duration, velocity };
+}
+```
+
+## Ytelseoptimalisering
+
+> **SharedArrayBuffer**: Ein lågnivå-buffer som tillèt rask datadeling mellom trådar.  
+> *Krev COOP/COEP-headers for sikker køyring.*
+
+Me brukar **WebWorkers** for å flytte tunge utrekningar ut av hovudtråden:
+
+```typescript
+// worker.ts
+self.onmessage = async (e: MessageEvent) => {
+  const { frame, config } = e.data;
+  const buffer = new SharedArrayBuffer(frame.width * frame.height * 4);
+  const pixels = new Uint8ClampedArray(buffer);
+  
+  // Køyr modellen i arbeidstråden
+  const landmarks = await detector.detect(pixels);
+  self.postMessage({ landmarks }, [buffer]);
+};
+```
 
 ## Framtidsutsikter
 
-Dette er berre byrjinga på ei større digital tolking av menneskeleg kommunikasjon:
-- Utviding til heile setningar i teiknspråk
-- Integrasjon med virtuelle assistentar
-- Betring av presisjon gjennom maskinlæring
-
-### Samanheng
-Dette representerer ei bru mellom analog og digital kommunikasjon, der menneskelege gestar blir omsette til binære kodar og tilbake. Det viser korleis teknologi kan utvide grensene for menneskeleg samhandling, og korleis mønster i rørsler kan bli til meiningsfull digital kommunikasjon.
-
-*I ei verd der digital kommunikasjon blir stadig viktigare, opnar denne teknologien for nye måtar å inkludere fleire i den digitale samtalen.*
+Systemet vårt kan utvidast i fleire retningar:
+- **WebGL-akselerasjon** for raskare inferens
+- *Fleire-hands-støtte* for meir komplekse teikn
+- Integrasjon med **WebAssembly** for nær-nativ ytelse
