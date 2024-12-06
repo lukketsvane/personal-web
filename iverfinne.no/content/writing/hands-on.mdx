@@ -1,0 +1,115 @@
+---
+title: "Hand Tracking for Sign Language"
+description: "Building an ASL recognition system through the lens of machine learning, computer vision, and human gesture interpretation"
+date: "2024-12-02"
+tags: ["sign language", "machine learning", "computer vision", "accessibility", "gesture recognition", "advent-of-code"]
+thumbnails: [
+  { src: "https://i.ibb.co/nDkJ0PJ/asl-A.png", alt: "ASL letter A" },
+  { src: "https://i.ibb.co/QnVMGjS/asl-B.png", alt: "ASL letter B" },
+  { src: "https://i.ibb.co/z42NN4h/asl-C.png", alt: "ASL letter C" }
+]
+type: "technical"
+---
+
+import { ImageGallery } from "@/components/image-gallery"
+
+The human hand, with its 27 degrees of freedom across 27 bones, represents one of nature's most sophisticated biomechanical systems. In American Sign Language (ASL), this remarkable instrument becomes a canvas for linguistic expression, where each gesture carries precise semantic meaning. Through this project, available at [https://handson.iverfinne.no](https://handson.iverfinne.no), we explore how to bridge the gap between human gestures and digital interpretation.
+
+<ImageGallery
+  images={[
+    { src: "https://i.ibb.co/nDkJ0PJ/asl-A.png", alt: "ASL letter A - A fist with thumb resting against index finger" },
+    { src: "https://i.ibb.co/QnVMGjS/asl-B.png", alt: "ASL letter B - Four fingers extended upward, thumb across palm" },
+    { src: "https://i.ibb.co/z42NN4h/asl-C.png", alt: "ASL letter C - Curved hand forming C shape" },
+    { src: "https://i.ibb.co/J7fpyq3/asl-D.png", alt: "ASL letter D - Index up, others curved" },
+    { src: "https://i.ibb.co/1vXm9pn/asl-E.png", alt: "ASL letter E - Curled fingers, thumb across" },
+    { src: "https://i.ibb.co/6WRZyb5/asl-F.png", alt: "ASL letter F - Index and thumb touching" }
+  ]}
+/>
+
+## Technical Architecture
+
+Our implementation leverages several key technologies:
+
+1. **TensorFlow.js with HandPose Model**: Provides real-time hand skeleton tracking
+2. **WebGL Acceleration**: Ensures smooth performance for video processing
+3. **React + Next.js**: Powers the responsive user interface
+4. **Custom Gesture Recognition Engine**: Maps hand positions to ASL letters
+
+### Hand Tracking Pipeline
+
+The system processes hand gestures through multiple stages:
+
+```typescript
+interface HandPosition {
+  landmarks: Point3D[];      // 21 key points in 3D space
+  confidence: number;        // Detection confidence score
+  boundingBox: BBox;        // Hand region in frame
+}
+
+class GestureProcessor {
+  static readonly CONFIDENCE_THRESHOLD = 0.85;
+  static readonly TEMPORAL_WINDOW = 500; // milliseconds
+  
+  processFrame(handData: HandPosition): ASLSign | null {
+    if (handData.confidence < this.CONFIDENCE_THRESHOLD) return null;
+    
+    const fingerStates = this.analyzeFingerPositions(handData.landmarks);
+    const handOrientation = this.calculateOrientation(handData.landmarks);
+    
+    return this.classifyGesture(fingerStates, handOrientation);
+  }
+}
+```
+
+### Gesture Recognition Implementation
+
+The core recognition system uses a combination of:
+
+1. **Spatial Analysis**: Tracking relative positions of finger joints
+2. **Temporal Processing**: Monitoring hand movement over time
+3. **Probabilistic Matching**: Comparing detected poses against known ASL patterns
+
+```typescript
+interface ASLSign {
+  letter: string;
+  confidence: number;
+  fingerConfig: {
+    [finger in FingerName]: FingerState;
+  };
+  requirements: {
+    orientation: OrientationConstraints;
+    motion: MotionConstraints;
+  };
+}
+```
+
+## Learning Through Interaction
+
+The application includes an interactive learning mode that:
+
+- Provides real-time feedback on hand positions
+- Guides users through the ASL alphabet progressively
+- Offers visual references for correct hand positions
+- Tracks progress and maintains engagement through gamification
+
+## Performance Considerations
+
+To achieve smooth real-time performance, we implemented several optimizations:
+
+1. **Frame Buffering**: Reduces jitter in gesture detection
+2. **Confidence Thresholding**: Filters out uncertain predictions
+3. **WebGL Acceleration**: Leverages GPU for faster processing
+4. **Efficient State Management**: Minimizes React rendering cycles
+
+## Future Enhancements
+
+Planned improvements include:
+
+1. Support for dynamic gestures and signing
+2. Multi-hand tracking for complex signs
+3. Integration with sign language learning curricula
+4. Expanded gesture vocabulary beyond the alphabet
+
+## Conclusion
+
+This project demonstrates the potential of modern web technologies in creating accessible, educational tools for sign language learning. Through careful consideration of both technical and user experience aspects, we've created a system that makes ASL learning more interactive and engaging.
