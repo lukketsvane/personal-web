@@ -138,13 +138,13 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     const remainingTags = post.tags.length - tagsToShow.length
 
     return (
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap">
         {tagsToShow.map((tag) => (
           <Badge 
             key={`${post.slug}-tag-${tag}`}
             variant="secondary"
             className={cn(
-              "text-sm px-3 py-1 rounded-full font-medium transition-colors text-white",
+              "text-xs px-2 py-0.5 rounded-full font-medium transition-colors text-white",
               tagColors[tag]
             )}
           >
@@ -154,7 +154,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
         {!showAllTags && remainingTags > 0 && (
           <Badge 
             variant="secondary"
-            className="text-sm px-3 py-1 rounded-full font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
+            className="text-xs px-2 py-0.5 rounded-full font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
             onClick={handleShowAllTags}
           >
             ...
