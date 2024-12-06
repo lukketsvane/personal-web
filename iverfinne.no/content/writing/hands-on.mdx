@@ -13,7 +13,7 @@ type: "technical"
 
 import { ImageGallery } from "@/components/image-gallery"
 
-The human hand, with its 27 degrees of freedom across 27 bones, represents one of nature's most sophisticated biomechanical systems. In American Sign Language (ASL), this remarkable instrument becomes a canvas for linguistic expression, where each gesture carries precise semantic meaning. Through this project, available at [https://handson.iverfinne.no](https://handson.iverfinne.no), we explore how to bridge the gap between human gestures and digital interpretation.
+The human hand, with its network of 27 bones and tendons, functions as a precise biomechanical system. In American Sign Language (ASL), this instrument becomes a medium for linguistic expression, where each gesture carries specific semantic meaning. Through this project at [handson.iverfinne.no](https://handson.iverfinne.no), we explore the technical challenges of translating these physical movements into digital understanding.
 
 <ImageGallery
   images={[
@@ -26,90 +26,75 @@ The human hand, with its 27 degrees of freedom across 27 bones, represents one o
   ]}
 />
 
-## Technical Architecture
+## The Digital Mirror: Machine Learning Meets Human Gesture
 
-Our implementation leverages several key technologies:
+Our implementation approaches hand tracking through a multi-layered system that processes visual input similar to human visual perception. Each frame undergoes systematic analysis:
 
-1. **TensorFlow.js with HandPose Model**: Provides real-time hand skeleton tracking
-2. **WebGL Acceleration**: Ensures smooth performance for video processing
-3. **React + Next.js**: Powers the responsive user interface
-4. **Custom Gesture Recognition Engine**: Maps hand positions to ASL letters
+> **Gestural Topology**: The systematic mapping of hand configurations into discrete, recognizable states.
+>
+> *Like phonemes in spoken language, ASL hand positions form a finite set of meaningful units.*
 
-### Hand Tracking Pipeline
+### Technical Implementation
 
-The system processes hand gestures through multiple stages:
+The system processes hand gestures through three key components:
 
+**1. Spatial Configuration**
 ```typescript
 interface HandPosition {
-  landmarks: Point3D[];      // 21 key points in 3D space
-  confidence: number;        // Detection confidence score
-  boundingBox: BBox;        // Hand region in frame
+  landmarks: Point3D[];        // 21 key points in 3D space
+  orientation: Orientation;    // Palm direction and rotation
+  motion: MotionPattern;      // Dynamic movement tracking
 }
+```
 
-class GestureProcessor {
-  static readonly CONFIDENCE_THRESHOLD = 0.85;
-  static readonly TEMPORAL_WINDOW = 500; // milliseconds
+**2. Semantic Mapping**
+```typescript
+interface ASLSign {
+  fingerPattern: {
+    [finger in FingerName]: FingerState;
+  };
+  handPosition: {
+    palm: PalmDirection;
+    orientation: string;
+    critical: string[];      // Key recognition points
+  };
+}
+```
+
+> **Critical Points**: Specific hand features that distinguish one sign from another.
+> 
+> *For example, the difference between 'U' and 'V' lies in finger spacing.*
+
+**3. Temporal Analysis**
+```typescript
+class MotionTracker {
+  private history: HandPosition[] = [];
+  private readonly windowSize = 30;  // 500ms at 60fps
   
-  processFrame(handData: HandPosition): ASLSign | null {
-    if (handData.confidence < this.CONFIDENCE_THRESHOLD) return null;
-    
-    const fingerStates = this.analyzeFingerPositions(handData.landmarks);
-    const handOrientation = this.calculateOrientation(handData.landmarks);
-    
-    return this.classifyGesture(fingerStates, handOrientation);
+  addFrame(position: HandPosition) {
+    this.history.push(position);
+    this.history = this.history.slice(-this.windowSize);
+    return this.analyzeMotion();
   }
 }
 ```
 
-### Gesture Recognition Implementation
+## Performance Optimization
 
-The core recognition system uses a combination of:
+The implementation focuses on practical performance through:
 
-1. **Spatial Analysis**: Tracking relative positions of finger joints
-2. **Temporal Processing**: Monitoring hand movement over time
-3. **Probabilistic Matching**: Comparing detected poses against known ASL patterns
+1. **Frame Buffering**: Reduces detection jitter
+2. **Confidence Thresholding**: Filters uncertain predictions
+3. **WebGL Acceleration**: Utilizes GPU for processing
+4. **State Management**: Minimizes render cycles
 
-```typescript
-interface ASLSign {
-  letter: string;
-  confidence: number;
-  fingerConfig: {
-    [finger in FingerName]: FingerState;
-  };
-  requirements: {
-    orientation: OrientationConstraints;
-    motion: MotionConstraints;
-  };
-}
-```
+## Future Development
 
-## Learning Through Interaction
+The project roadmap includes:
 
-The application includes an interactive learning mode that:
+1. Support for dynamic gestures
+2. Multi-hand tracking capabilities
+3. Integration with learning curricula
+4. Expanded gesture vocabulary
 
-- Provides real-time feedback on hand positions
-- Guides users through the ASL alphabet progressively
-- Offers visual references for correct hand positions
-- Tracks progress and maintains engagement through gamification
-
-## Performance Considerations
-
-To achieve smooth real-time performance, we implemented several optimizations:
-
-1. **Frame Buffering**: Reduces jitter in gesture detection
-2. **Confidence Thresholding**: Filters out uncertain predictions
-3. **WebGL Acceleration**: Leverages GPU for faster processing
-4. **Efficient State Management**: Minimizes React rendering cycles
-
-## Future Enhancements
-
-Planned improvements include:
-
-1. Support for dynamic gestures and signing
-2. Multi-hand tracking for complex signs
-3. Integration with sign language learning curricula
-4. Expanded gesture vocabulary beyond the alphabet
-
-## Conclusion
-
-This project demonstrates the potential of modern web technologies in creating accessible, educational tools for sign language learning. Through careful consideration of both technical and user experience aspects, we've created a system that makes ASL learning more interactive and engaging.
+This project demonstrates how web technologies can create practical tools for sign language learning, combining technical capability with educational utility.
