@@ -1,5 +1,3 @@
-# Digital Garden
-
 Personal web space and knowledge management system.
 
 ## Quick Links
