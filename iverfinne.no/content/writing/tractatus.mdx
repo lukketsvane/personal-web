@@ -5,17 +5,14 @@ date: "2024-12-02"
 tags: ["philosophy", "visualization", "d3js", "wittgenstein", "react"]
 type: "project"
 ---
-
-In 1921, Ludwig Wittgenstein published his *Tractatus Logico-Philosophicus* - a work that would fundamentally reshape philosophical thinking. The text's unique hierarchical structure, with its precisely numbered propositions, almost seems to anticipate modern data structures. Our project brings this mathematical-philosophical masterpiece into the digital age through interactive visualization.
+In 1921, Ludwig Wittgenstein published his *Tractatus Logico-Philosophicus* - a work that would fundamentally reshape philosophical thinking. The text's unique hierarchical structure, with its precisely numbered propositions, almost seems to anticipate modern data structures. You can explore my interactive visualization of this mathematical-philosophical masterpiece at [Tractatus Visualization](https://tractatus.iverfinne.no), which brings this work into the digital age through interactive visualization.
 
 > **Hierarchical Visualization**: The transformation of nested philosophical propositions into an explorable tree structure.
 > 
 > *Like the branches of a tree, each proposition grows from its parent, creating a natural taxonomy of thought.*
 
 ## Technical Architecture
-
 The visualization employs three distinct layout algorithms, each offering a unique perspective on Wittgenstein's work:
-
 1. **Tree Layout**: Traditional hierarchical representation
 2. **Radial Layout**: Circular arrangement emphasizing relationships
 3. **Circle Packing**: Space-efficient nested visualization
@@ -24,12 +21,10 @@ The visualization employs three distinct layout algorithms, each offering a uniq
 const TreeLayout = d3.tree<TractatusNode>()
   .size([height, width - 200])
   .nodeSize([60, 120]);
-
 type LayoutType = 'tree' | 'radial' | 'circle';
 ```
 
 ## Interactive Features
-
 The system implements several core interactions:
 
 **1. Navigation**
@@ -61,7 +56,6 @@ const playAudioAndMoveToNext = useCallback((node: D3Node) => {
 > *This mirrors Wittgenstein's own layered approach to philosophical argumentation.*
 
 ## Visual Design Philosophy
-
 The visualization employs a stark black and white palette, reflecting both modernist design principles and Wittgenstein's austere philosophical style. Node sizing and connection weights create a **visual hierarchy** that guides users through the philosophical structure:
 
 ```typescript
@@ -75,7 +69,6 @@ nodeEnter.append("circle")
 ```
 
 ## Data Structure
-
 The project maintains a faithful representation of the Tractatus's hierarchical nature while adding modern interactive capabilities:
 
 ```typescript
