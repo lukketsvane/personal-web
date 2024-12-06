@@ -9,11 +9,11 @@ thumbnails: [
   { src: "https://i.ibb.co/z42NN4h/asl-C.png", alt: "ASL letter C" }
 ]
 type: "technical"
+url: "http://handson.iverfinne.no"
 ---
-
 import { ImageGallery } from "@/components/image-gallery"
 
-The human hand, with its network of 27 bones and tendons, functions as a precise biomechanical system. In American Sign Language (ASL), this instrument becomes a medium for linguistic expression, where each gesture carries specific semantic meaning. Through this project at [handson.iverfinne.no](https://handson.iverfinne.no), we explore the technical challenges of translating these physical movements into digital understanding.
+Within the intricate framework of the human hand—a network of 27 bones and tendons—lies a sophisticated biomechanical system that serves as the foundation for linguistic expression in American Sign Language (ASL). At [http://handson.iverfinne.no](http://handson.iverfinne.no), this project explores the intersection between physical gesture and digital interpretation, unraveling the complexities of translating human movement into machine understanding.
 
 <ImageGallery
   images={[
@@ -28,15 +28,15 @@ The human hand, with its network of 27 bones and tendons, functions as a precise
 
 ## The Digital Mirror: Machine Learning Meets Human Gesture
 
-Our implementation approaches hand tracking through a multi-layered system that processes visual input similar to human visual perception. Each frame undergoes systematic analysis:
-
-> **Gestural Topology**: The systematic mapping of hand configurations into discrete, recognizable states.
+> **Biomechanical Perception**: The process of converting fluid human movement into discrete, machine-readable states requires a deep understanding of both anatomical constraints and computational possibilities.
 >
-> *Like phonemes in spoken language, ASL hand positions form a finite set of meaningful units.*
+> *Consider how a pianist's fingers flow across keys—each motion both discrete and continuous.*
+
+Machine learning approaches this challenge through a multi-layered system that mirrors human visual perception, processing each frame through carefully orchestrated stages of analysis:
 
 ### Technical Implementation
 
-The system processes hand gestures through three key components:
+The system's architecture rests on three foundational pillars:
 
 **1. Spatial Configuration**
 ```typescript
@@ -61,9 +61,9 @@ interface ASLSign {
 }
 ```
 
-> **Critical Points**: Specific hand features that distinguish one sign from another.
+> **Critical Points**: The distinctive features that define each sign's unique identity in the gestural space.
 > 
-> *For example, the difference between 'U' and 'V' lies in finger spacing.*
+> *Much like how phonemes distinguish words in spoken language, these points form the atomic units of sign language recognition.*
 
 **3. Temporal Analysis**
 ```typescript
@@ -81,20 +81,22 @@ class MotionTracker {
 
 ## Performance Optimization
 
-The implementation focuses on practical performance through:
+> **Real-time Processing**: The delicate balance between accuracy and speed requires sophisticated optimization strategies.
 
-1. **Frame Buffering**: Reduces detection jitter
-2. **Confidence Thresholding**: Filters uncertain predictions
-3. **WebGL Acceleration**: Utilizes GPU for processing
-4. **State Management**: Minimizes render cycles
+The implementation achieves fluid performance through:
+
+1. **Frame Buffering**: Smooths detection jitter through temporal averaging
+2. **Confidence Thresholding**: Eliminates uncertain predictions
+3. **WebGL Acceleration**: Harnesses GPU parallel processing
+4. **State Management**: Optimizes React rendering cycles
 
 ## Future Development
 
-The project roadmap includes:
+The project's evolution will extend across several dimensions:
 
 1. Support for dynamic gestures
 2. Multi-hand tracking capabilities
 3. Integration with learning curricula
 4. Expanded gesture vocabulary
 
-This project demonstrates how web technologies can create practical tools for sign language learning, combining technical capability with educational utility.
+This convergence of web technologies and gesture recognition demonstrates the potential for creating accessible, educational tools that bridge the gap between human expression and digital understanding.

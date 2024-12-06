@@ -7,6 +7,7 @@ import { MDXRemote } from 'next-mdx-remote'
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
+import { Link2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
@@ -24,8 +25,8 @@ const mdxComponents = {
   h5: (props: any) => <h5 {...props} className="text-sm font-medium mt-2 mb-1 break-words" />,
   h6: (props: any) => <h6 {...props} className="text-xs font-medium mt-2 mb-1 break-words" />,
   p: (props: any) => <p {...props} className="break-words" />,
-  pre: (props: any) => <pre {...props} className="whitespace-pre-wrap break-words" />,
-  code: (props: any) => <code {...props} className="whitespace-pre-wrap break-words" />,
+  pre: (props: any) => <pre {...props} className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto whitespace-pre-wrap break-words" />,
+  code: (props: any) => <code {...props} className="bg-gray-800 text-gray-100 rounded px-1.5 py-0.5 whitespace-pre-wrap break-words" />,
   ImageGallery: ImageGallery,
   iframe: (props: any) => (
     <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden mb-4">
@@ -78,11 +79,35 @@ const TimelineNode = ({ type }: { type: string }) => {
 }
 
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
+  const [showAllTags, setShowAllTags] = useState(false)
+
   const tagColors = useMemo(() => {
     if (!Array.isArray(post.tags)) return {}
     return post.tags.reduce((acc, tag) => {
-      acc[tag] = "bg-gray-500 text-white"
-      return acc
+      switch (tag) {
+        case "sign language":
+        case "machine learning":
+        case "computer vision":
+          return { ...acc, [tag]: "bg-blue-500 hover:bg-blue-600" }
+        case "accessibility":
+        case "gesture recognition":
+          return { ...acc, [tag]: "bg-green-500 hover:bg-green-600" }
+        case "advent-of-code":
+          return { ...acc, [tag]: "bg-red-500 hover:bg-red-600" }
+        case "philosophy":
+        case "visualization":
+        case "d3js":
+        case "wittgenstein":
+        case "react":
+          return { ...acc, [tag]: "bg-purple-500 hover:bg-purple-600" }
+        case "3D":
+        case "design":
+        case "interactive":
+        case "spline":
+          return { ...acc, [tag]: "bg-yellow-500 hover:bg-yellow-600" }
+        default:
+          return { ...acc, [tag]: "bg-gray-500 hover:bg-gray-600" }
+      }
     }, {} as Record<string, string>)
   }, [post.tags])
 
@@ -94,14 +119,58 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     }
   }
 
+  const handleUrlClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (post.url) {
+      window.open(post.url, '_blank')
+    }
+  }
+
+  const handleShowAllTags = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setShowAllTags(true)
+  }
+
+  const renderTags = () => {
+    if (!Array.isArray(post.tags)) return null
+
+    const tagsToShow = showAllTags ? post.tags : post.tags.slice(0, 5)
+    const remainingTags = post.tags.length - tagsToShow.length
+
+    return (
+      <div className="flex gap-2 flex-wrap">
+        {tagsToShow.map((tag) => (
+          <Badge 
+            key={`${post.slug}-tag-${tag}`}
+            variant="secondary"
+            className={cn(
+              "text-sm px-3 py-1 rounded-full font-medium transition-colors text-white",
+              tagColors[tag]
+            )}
+          >
+            {tag}
+          </Badge>
+        ))}
+        {!showAllTags && remainingTags > 0 && (
+          <Badge 
+            variant="secondary"
+            className="text-sm px-3 py-1 rounded-full font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
+            onClick={handleShowAllTags}
+          >
+            ...
+          </Badge>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-8 sm:pl-0">
+    <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
         <time className="text-lg font-semibold text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', { 
             month: '2-digit', 
-            day: '2-digit', 
-            year: 'numeric' 
+            day: '2-digit' 
           })}
         </time>
       </div>
@@ -124,14 +193,24 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
           >
             {/* Title Section */}
-            <div className="flex items-start gap-4 mb-4">
+            <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex-1">
-                <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
+                  {post.url && (
+                    <button 
+                      onClick={handleUrlClick}
+                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                      aria-label="Open link in new tab"
+                    >
+                      <Link2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
                 <time className="block sm:hidden text-sm text-muted-foreground mb-2">
                   {new Date(post.date).toLocaleDateString('en-US', { 
                     month: '2-digit', 
-                    day: '2-digit', 
-                    year: 'numeric' 
+                    day: '2-digit' 
                   })}
                 </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
@@ -152,8 +231,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
             {/* Thumbnails */}
             {!isExpanded && post.thumbnails && post.thumbnails.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                {post.thumbnails.slice(0, 4).map((img, i) => (
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {post.thumbnails.slice(0, 3).map((img, i) => (
                   <div 
                     key={`${post.slug}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
@@ -170,16 +249,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             )}
 
             {/* Tags */}
-            <div className="flex gap-2 flex-wrap">
-              {Array.isArray(post.tags) && post.tags.map((tag) => (
-                <Badge 
-                  key={`${post.slug}-tag-${tag}`}
-                  className={cn("text-xs rounded-full", tagColors[tag])}
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {renderTags()}
 
             {/* Expanded Content */}
             <AnimatePresence mode="wait">
