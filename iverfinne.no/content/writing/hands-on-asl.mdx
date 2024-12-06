@@ -12,7 +12,7 @@ type: "technical"
 ---
 import { ImageGallery } from "@/components/image-gallery"
 
-The human hand, with its 27 degrees of freedom across 27 bones, represents one of nature's most sophisticated biomechanical systems. In American Sign Language (ASL), this remarkable instrument becomes a canvas for linguistic expression, where each gesture carries precise semantic meaning. Our journey into digital sign language recognition begins with understanding how to capture this complexity in code.
+The human hand, with its 27 degrees of freedom across 27 bones, represents one of nature's most sophisticated biomechanical systems. In American Sign Language (ASL), this remarkable instrument becomes a canvas for linguistic expression, where each gesture carries precise semantic meaning. You can try out my implementation of digital sign language recognition at [https://handson.iverfinne.no](https://handson.iverfinne.no). This journey into digital sign language recognition begins with understanding how to capture this complexity in code.
 
 <ImageGallery
   images={[
@@ -31,7 +31,7 @@ The human hand, with its 27 degrees of freedom across 27 bones, represents one o
 
 ## The Digital Hand Model
 
-Our system models hand gestures through three fundamental lenses:
+The system models hand gestures through three fundamental lenses:
 
 **1. Spatial Configuration**
 ```typescript
@@ -76,7 +76,7 @@ class MotionTracker {
 
 ## Pattern Recognition Architecture
 
-The system processes hand gestures through a multi-stage pipeline that mirrors human visual cognition:
+The implementation processes hand gestures through a multi-stage pipeline that mirrors human visual cognition:
 
 1. **Feature Extraction**: Raw camera input transforms into a 21-point skeletal model
 2. **Pose Estimation**: These points map to predefined hand configurations
@@ -87,7 +87,7 @@ The system processes hand gestures through a multi-stage pipeline that mirrors h
 > 
 > *This space is normalized to account for different hand sizes and camera distances.*
 
-Our implementation leverages **TensorFlow.js** for real-time processing and employs WebGL acceleration for performance optimization:
+The implementation leverages **TensorFlow.js** for real-time processing and employs WebGL acceleration for performance optimization:
 
 ```typescript
 interface GestureProcessor {
