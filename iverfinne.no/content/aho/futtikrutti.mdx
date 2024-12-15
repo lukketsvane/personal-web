@@ -1,0 +1,85 @@
+---
+tittel: "Futti Krutti"
+beskriving: "Eit omfattande designprosjekt som utforskar fargar, typografi og bruksområde"
+dato: "2024-11-01"
+stikkord: ["design", "fargesystem", "typografi", "branding"]
+type: "prosjekt"
+---
+
+import { GlyphWriter } from './components/GlyphWriter'
+import { SplineViewer } from './components/SplineViewer'
+import { useState } from 'react';
+
+
+# Futti Krutti
+
+Futti Krutti er eit omfattande designprosjekt som utforskar fargar, typografi og ulike bruksområde for eit heilskapleg visuelt uttrykk.
+
+## 3D-visualisering
+
+<div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+  <SplineViewer />
+</div>
+
+## Fargesystem
+
+Fargepaletten til Futti Krutti består av følgjande fargar:
+
+<div className="grid gap-3">
+  {[
+    { name: 'industri', hex: '#F58024' },
+    { name: 'smeltevatn', hex: '#4569B4' },
+    { name: 'korall', hex: '#C590BE' },
+    { name: 'midas', hex: '#FDB627' },
+    { name: 'krutt', hex: '#EE4C30' },
+    { name: 'urskog', hex: '#4F8382' }
+  ].map((color) => (
+    <div key={color.name} className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+      <div 
+        className="w-8 h-8 rounded-full"
+        style={{ backgroundColor: color.hex }}
+      />
+      <span className="font-medium">{color.name}</span>
+      <span className="text-gray-500 ml-auto">{color.hex}</span>
+    </div>
+  ))}
+</div>
+
+## Typografisystem
+
+<div className="bg-white rounded-xl shadow-sm p-4">
+  <GlyphWriter />
+</div>
+
+Typografisystemet til Futti Krutti er basert på eit unikt glyph-design som kombinerer moderne og tradisjonelle element. Dette systemet gir prosjektet ein distinkt visuell identitet som er både lesbar og estetisk tiltalande.
+
+## Bruksområde
+
+Futti Krutti-designet viser allsidigheten i konseptet, frå festivalbranding til logobruk og bygningsillustrationer.
+
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <div className="aspect-[3/2] relative">
+    <img
+      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-HTlYwNkevk4pwMYorWzQs1mhB4vq1w.png"
+      alt="Festival branding"
+      className="object-cover rounded-lg w-full h-full"
+    />
+  </div>
+  <div className="aspect-[3/2] relative">
+    <img
+      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-xJtPqhjAPz2VsmN7pPjE9XSNpnXJcN.png"
+      alt="Logo usage"
+      className="object-cover rounded-lg w-full h-full"
+    />
+  </div>
+  <div className="aspect-[3/2] relative">
+    <img
+      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-yORrIJ0QlbWjT9aVoiWIjA5EpJdR4Y.png"
+      alt="Building illustrations"
+      className="object-cover rounded-lg w-full h-full"
+    />
+  </div>
+</div>
+
+Desse eksempla viser korleis Futti Krutti-designet kan tilpassast ulike kontekstar, frå livlege festivalar til seriøse forretningssamanhengar og arkitektoniske prosjekt. Den konsekvente bruken av fargesystemet og typografien sikrar ein samanhengande visuell identitet på tvers av alle bruksområde.
+
