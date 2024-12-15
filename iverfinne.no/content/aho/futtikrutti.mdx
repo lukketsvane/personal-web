@@ -6,10 +6,11 @@ stikkord: ["design", "fargesystem", "typografi", "branding"]
 type: "prosjekt"
 ---
 
-import { GlyphWriter } from './components/GlyphWriter'
-import { SplineViewer } from './components/SplineViewer'
-import { useState } from 'react';
-
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Trash2, Minus, Plus } from 'lucide-react'
 
 # Futti Krutti
 
@@ -17,9 +18,36 @@ Futti Krutti er eit omfattande designprosjekt som utforskar fargar, typografi og
 
 ## 3D-visualisering
 
-<div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
-  <SplineViewer />
-</div>
+{(() => {
+  const SplineViewer = () => {
+    const splineRef = useRef(null);
+
+    useEffect(() => {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js';
+      script.type = 'module';
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }, []);
+
+    return (
+      <spline-viewer
+        ref={splineRef}
+        url="https://prod.spline.design/j1MY9NLCib91rAlF/scene.splinecode"
+        className="w-full aspect-video"
+      />
+    );
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+      <SplineViewer />
+    </div>
+  );
+})()}
 
 ## Fargesystem
 
@@ -47,9 +75,156 @@ Fargepaletten til Futti Krutti består av følgjande fargar:
 
 ## Typografisystem
 
-<div className="bg-white rounded-xl shadow-sm p-4">
-  <GlyphWriter />
-</div>
+{(() => {
+  const placeholderWords = [
+    'Desember', 'Kruttverket', 'Alnaelva', 'Urskog', 'Gamlebyen'
+  ];
+
+  const getRandomWord = () => {
+    const randomIndex = Math.floor(Math.random() * placeholderWords.length);
+    return placeholderWords[randomIndex];
+  };
+
+  const glyphMap = {
+    'A': 'https://i.ibb.co/NWS50GK/glyph-A.png',
+    'B': 'https://i.ibb.co/Sxyrm8M/glyph-B.png',
+    'C': 'https://i.ibb.co/TLhrkBS/glyph-C.png',
+    'D': 'https://i.ibb.co/BN7R4FQ/glyph-D.png',
+    'E': 'https://i.ibb.co/NpVNs6w/glyph-E.png',
+    'F': 'https://i.ibb.co/qjL3xzM/glyph-F.png',
+    'G': 'https://i.ibb.co/0J4mQD8/glyph-g.png',
+    'H': 'https://i.ibb.co/Tm2Pp0b/glyph-h.png',
+    'I': 'https://i.ibb.co/rm1ntX1/glyph-I.png',
+    'J': 'https://i.ibb.co/G50yxBc/glyph-J.png',
+    'K': 'https://i.ibb.co/PxDkFpP/glyph-K.png',
+    'L': 'https://i.ibb.co/LQNxXR5/glyph-L.png',
+    'M': 'https://i.ibb.co/kKynQx1/glyph-M.png',
+    'N': 'https://i.ibb.co/KhKvV1R/glyph-N.png',
+    'O': 'https://i.ibb.co/syCVnrP/glyph.png',
+    'P': 'https://i.ibb.co/pbfj1gT/glyph-P.png',
+    'Q': 'https://i.ibb.co/qYB1jgH/glyph-Q.png',
+    'R': 'https://i.ibb.co/0YdVb6c/glyph-R.png',
+    'S': 'https://i.ibb.co/NmXPhhs/glyph-S.png',
+    'T': 'https://i.ibb.co/YykQZG4/glyph-T2.png',
+    'U': 'https://i.ibb.co/02D9Scy/glyph-U.png',
+    'V': 'https://i.ibb.co/JK0h5Lz/glyph-V.png',
+    'W': 'https://i.ibb.co/JjsJvjZ/glyph-W.png',
+    'X': 'https://i.ibb.co/s9mFvvc/glyph-X.png',
+    'Y': 'https://i.ibb.co/6y4mtFp/glyph-Y.png',
+    'Z': 'https://i.ibb.co/JyCDJhQ/glyph-Z.png',
+    '1': 'https://i.ibb.co/LkyJtFb/glyph-1.png',
+    '2': 'https://i.ibb.co/0Fhs51Q/glyph-2.png',
+    '3': 'https://i.ibb.co/tCWyvq2/glyph-3.png',
+    '4': 'https://i.ibb.co/k5zvL6Z/glyph-4.png',
+    '5': 'https://i.ibb.co/9GBfH4B/glyph-5.png',
+    '6': 'https://i.ibb.co/Yhpcz3V/glyph-6.png',
+    '7': 'https://i.ibb.co/Yb1K0HG/glyph-7.png',
+    '8': 'https://i.ibb.co/qnkgQ9y/glyph-8.png',
+    'Æ': 'https://i.ibb.co/2P0CTdG/glyph.png',
+    'Ø': 'https://i.ibb.co/6r3sz4j/glyph.png',
+    'Å': 'https://i.ibb.co/82nfH91/glyph.png',
+  };
+
+  const GlyphWriter = () => {
+    const [text, setText] = useState('');
+    const [glyphSize, setGlyphSize] = useState(40);
+
+    useEffect(() => {
+      setText(getRandomWord());
+    }, []);
+
+    const handleClear = () => {
+      setText(getRandomWord());
+    };
+
+    const handleSizeChange = (increment) => {
+      setGlyphSize(prev => Math.max(20, Math.min(100, prev + increment)));
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="relative">
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="min-h-[100px] text-lg pr-24 pt-4 resize-none rounded-xl border-2"
+              style={{ minHeight: '80px' }}
+            />
+            <div className="absolute top-2 right-2 flex gap-2">
+              <Button onClick={handleClear} variant="ghost" size="icon" className="h-8 w-8">
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Clear</span>
+              </Button>
+              <Button
+                onClick={() => handleSizeChange(-10)}
+                variant="ghost"
+                size="icon"
+                disabled={glyphSize <= 20}
+                className="h-8 w-8"
+              >
+                <Minus className="h-4 w-4" />
+                <span className="sr-only">Smaller</span>
+              </Button>
+              <Button
+                onClick={() => handleSizeChange(10)}
+                variant="ghost"
+                size="icon"
+                disabled={glyphSize >= 100}
+                className="h-8 w-8"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="sr-only">Larger</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-2 rounded-xl bg-white p-6">
+          <div className="flex flex-wrap items-center justify-center gap-0.5">
+            {text.split('').map((char, index) => {
+              const upperChar = char.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              const glyphSrc = glyphMap[upperChar];
+              
+              if (!glyphSrc) {
+                if (upperChar === 'A' && char === 'å') return (
+                  <div key={index} className="relative" style={{ width: glyphSize, height: glyphSize }}>
+                    <Image
+                      src={glyphMap['Å']}
+                      alt={`Glyph for å`}
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                );
+                return <span key={index} className="w-8 h-8 flex items-center justify-center">{char}</span>;
+              }
+              
+              return (
+                <div key={index} className="relative" style={{ width: glyphSize, height: glyphSize }}>
+                  <Image
+                    src={glyphSrc}
+                    alt={`Glyph for ${char}`}
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-4">
+      <GlyphWriter />
+    </div>
+  );
+})()}
 
 Typografisystemet til Futti Krutti er basert på eit unikt glyph-design som kombinerer moderne og tradisjonelle element. Dette systemet gir prosjektet ein distinkt visuell identitet som er både lesbar og estetisk tiltalande.
 
