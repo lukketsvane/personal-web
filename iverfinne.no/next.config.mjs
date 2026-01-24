@@ -62,7 +62,7 @@ const nextConfig = {
 
   // Enable experimental features for better MDX support
   experimental: {
-    mdxRs: true
+    // mdxRs: true
   }
 }
 
