@@ -68,6 +68,11 @@ function getPageProperties(page: any) {
     return prop.multi_select.map((t: any) => t.name) || [];
   };
 
+  const getUrl = (name: string) => {
+    const prop = findProp(name);
+    return prop?.url || "";
+  };
+
   const title = getTitle();
   let slug = getRichText("Slug");
   if (!slug) {
@@ -81,6 +86,7 @@ function getPageProperties(page: any) {
   const type = TYPE_MAPPING[typeRaw] || "writing";
 
   const tags = getMultiSelect("Tags");
+  const url = getUrl("URL") || getUrl("Link") || "";
   
   let image: string | undefined = undefined;
   if (page.cover) {
@@ -88,6 +94,17 @@ function getPageProperties(page: any) {
       image = page.cover.external.url;
     } else if (page.cover.type === "file") {
       image = page.cover.file.url;
+    }
+  }
+
+  let icon: string | undefined = undefined;
+  if (page.icon) {
+    if (page.icon.type === "external") {
+      icon = page.icon.external.url;
+    } else if (page.icon.type === "file") {
+      icon = page.icon.file.url;
+    } else if (page.icon.type === "emoji") {
+      icon = page.icon.emoji;
     }
   }
 
@@ -104,6 +121,8 @@ function getPageProperties(page: any) {
     type,
     tags,
     image,
+    url,
+    icon
   };
 }
 
