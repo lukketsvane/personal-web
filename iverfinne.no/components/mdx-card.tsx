@@ -80,6 +80,8 @@ const mdxComponents = {
   CardFooter: CardFooter,
   useRef: useRef,
   useEffect: useEffect,
+  useMemo: useMemo,
+  useState: useState,
   // Icons
   Minus: Minus,
   Plus: Plus,
