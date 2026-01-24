@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import NextImage from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { MDXRemote } from 'next-mdx-remote'
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,6 +33,7 @@ const mdxComponents = {
   ImageGallery: ImageGallery,
   ModelViewer: ModelViewer,
   Button: Button,
+  Textarea: Textarea,
   Minus: Minus,
   Plus: Plus,
   Image: (props: any) => {
