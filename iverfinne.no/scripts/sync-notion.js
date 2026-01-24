@@ -208,7 +208,8 @@ async function syncNotion() {
 
       // 1. Convert Body to Markdown
       const mdblocks = await n2m.pageToMarkdown(page.id);
-      let mdString = n2m.toMarkdownString(mdblocks).parent;
+      const mdObject = n2m.toMarkdownString(mdblocks);
+      let mdString = mdObject.parent || "";
 
       // 2. Process Body Images (Download & Rewrite)
       mdString = await processImagesInMarkdown(mdString, props.slug);
@@ -256,6 +257,7 @@ async function syncNotion() {
 
   } catch (error) {
     console.error("Error syncing with Notion:", error);
+    process.exit(1);
   }
 }
 

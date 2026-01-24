@@ -41,9 +41,11 @@ jobs:
           # Check for changes
           if [[ -n $(git status -s) ]]; then
             echo "Changes detected. Committing..."
+            git config --global pull.rebase true
+            git pull origin main
             git add .
-            git commit -m "content: sync from notion [skip ci]"
-            git push
+            git commit -m "content: sync from notion"
+            git push origin main
           else
             echo "No changes detected."
           fi

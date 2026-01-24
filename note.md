@@ -1,29 +1,49 @@
-# Notion Database Configuration
+# 🚀 How to Manage iverfinne.no via Notion
 
-To sync your Notion database with iverfinne.no, your database MUST have these exact properties.
+Your website is now a "headless" blog powered by Notion. You write; the robots do the rest.
 
-### Required Properties
-| Property Name | Type | Notes |
-| :--- | :--- | :--- |
-| **Name** | Title | This is the default "Title" column. |
-| **Status** | Status | Ensure it has a status named "Done". |
-| **Type** | Select | Options: `Writing`, `Book`, `Project`, `Link` |
-| **Date** | Date | |
-| **Summary** | Text (Rich Text) | |
-| **Slug** | Text (Rich Text) | Used for the URL (e.g., `my-cool-post`). |
-| **Tags** | Multi-select | |
+## 1. Create a Post
+1.  Open your **Notion Database**.
+2.  Click **"New"**.
+3.  Write your content (Text, Images, Code Blocks).
+4.  **Set Status to "Done"**. (This is the trigger!)
 
-### How to add them in Notion:
-1. Open your Database in Notion.
-2. Click the **"+"** icon on the far right of the table headers.
-3. Search for the **Type** (e.g., Select, Date, Status).
-4. Rename the property to match the **Property Name** above exactly (Case-sensitive).
+## 2. Required Properties
+For a post to appear, ensure these columns are filled:
+| Property | Value |
+| :--- | :--- |
+| **Name** | Title of your post |
+| **Status** | `Done` (Drafts stay hidden) |
+| **Type** | `Writing`, `Project`, `Book`, or `Link` |
+| **Date** | Publication date |
 
----
+## 3. The Automation (How it works)
+*   **Automatic:** Every **hour**, GitHub checks your Notion for "Done" posts.
+*   **Magic:** It downloads your text & images, commits them to code, and updates the site.
+*   **Manual Override:** Want it live *now*?
+    *   Go to [GitHub Actions](https://github.com/lukketsvane/personal-web/actions) -> **Sync Notion Content** -> **Run Workflow**.
 
-### Syncing
-Once the columns are added, you can run the sync locally:
-```bash
-npm run sync
+## 5. Instant Updates (Webhook)
+To trigger the sync immediately from an external tool (like Make, Zapier, or a script), send a POST request to the GitHub API:
+
+**URL:** `https://api.github.com/repos/lukketsvane/personal-web/dispatches`
+
+**Headers:**
+*   `Accept: application/vnd.github.v3+json`
+*   `Authorization: token YOUR_GITHUB_PAT` (Must have `repo` scope)
+*   `User-Agent: YourApp`
+
+**Body:**
+```json
+{
+  "event_type": "notion_update"
+}
 ```
-This will download all pages where **Status** is "Done" into the `content/` folder.
+
+## 4. Local Development (Optional)
+If you are coding on your laptop and want to pull the latest Notion posts to test:
+```bash
+cd iverfinne.no
+npm run sync
+npm run dev
+```
