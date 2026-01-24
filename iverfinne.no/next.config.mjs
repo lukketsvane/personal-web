@@ -45,20 +45,6 @@ const nextConfig = {
   },
 
   webpack: (config, { isServer }) => {
-    // Add MDX support
-    config.module.rules.push({
-      test: /\.mdx?$/,
-      use: [
-        {
-          loader: '@mdx-js/loader',
-          options: {
-            remarkPlugins: [remarkGfm],
-            rehypePlugins: [rehypePrismPlus],
-          },
-        },
-      ],
-    })
-
     // Add SVG support
     config.module.rules.push({
       test: /\.svg$/,
@@ -76,7 +62,7 @@ const nextConfig = {
 
   // Enable experimental features for better MDX support
   experimental: {
-    mdxRs: true,
+    mdxRs: true
   }
 }
 
