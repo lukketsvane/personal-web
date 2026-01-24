@@ -28,6 +28,7 @@ export async function getAllPosts(): Promise<Post[]> {
             const image = imageMatch ? imageMatch[1] : undefined
 
             posts.push({
+              uid: data.uid || file.replace(/\.mdx$/, ''),
               title: data.title || 'Untitled',
               description: data.description || '',
               date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),

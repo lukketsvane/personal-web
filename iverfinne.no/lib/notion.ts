@@ -1,3 +1,4 @@
+// Notion API client library
 import { Client } from "@notionhq/client";
 import { NotionToMarkdown } from "notion-to-md";
 import { Post } from "@/types/post";
@@ -67,7 +68,7 @@ function getPageProperties(page: any) {
 
   const tags = getMultiSelect("Tags");
   
-  let image = null;
+  let image: string | undefined = undefined;
   if (page.cover) {
     if (page.cover.type === "external") {
       image = page.cover.external.url;
@@ -111,7 +112,7 @@ export async function getPublishedPosts(): Promise<Post[]> {
   });
 
   const posts = response.results
-    .map((page) => {
+    .map((page): Post | null => {
       try {
         const props = getPageProperties(page);
         return {

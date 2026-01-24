@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useMemo } from "react"
-import Image from "next/image"
+import NextImage from "next/image"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { MDXRemote } from 'next-mdx-remote'
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -30,6 +31,15 @@ const mdxComponents = {
   code: (props: any) => <code {...props} className="bg-gray-800 text-gray-100 rounded px-1.5 py-0.5 whitespace-pre-wrap break-words" />,
   ImageGallery: ImageGallery,
   ModelViewer: ModelViewer,
+  Button: Button,
+  Image: (props: any) => {
+    // If it's used as <Image /> in MDX, it might not have width/height
+    if (!props.width && !props.height && !props.fill) {
+      return <img {...props} className="max-w-full h-auto rounded-lg mb-4" />
+    }
+    return <NextImage {...props} />
+  },
+  img: (props: any) => <img {...props} className="max-w-full h-auto rounded-lg mb-4" />,
   iframe: (props: any) => (
     <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden mb-4">
       <iframe {...props} className="absolute inset-0 w-full h-full border-0" />
@@ -220,7 +230,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               </div>
               {post.type === "books" && post.icon && (
                 <div className="relative w-16 h-16 shrink-0">
-                  <Image
+                  <NextImage
                     src={post.icon}
                     alt=""
                     fill
@@ -249,7 +259,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         className="h-full w-full"
                       />
                     ) : (
-                      <Image
+                      <NextImage
                         src={img.src}
                         alt={img.alt}
                         fill
@@ -280,7 +290,6 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         {...serializedContent}
                         components={{
                           ...mdxComponents,
-                          ImageGallery,
                           WebDesignKeys
                         }}
                       />
