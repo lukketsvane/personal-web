@@ -6,8 +6,6 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
-console.log("Notion Client initialized. Query method exists:", typeof notion.databases?.query);
-
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 const TYPE_MAPPING: Record<string, "writing" | "books" | "projects" | "outgoing_links"> = {
@@ -112,17 +110,23 @@ export async function getPublishedPosts(): Promise<Post[]> {
     ],
   });
 
-  const posts = response.results.map((page) => {
-    const props = getPageProperties(page);
-    
-    return {
-      ...props,
-      content: "", // We don't load content in the list view for performance
-      thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
-    };
-  });
+  const posts = response.results
+    .map((page) => {
+      try {
+        const props = getPageProperties(page);
+        return {
+          ...props,
+          content: "", 
+          thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
+        };
+      } catch (e) {
+        console.error(`Error processing Notion page ${page.id}:`, e);
+        return null;
+      }
+    })
+    .filter((post): post is Post => post !== null);
 
-  return posts as Post[];
+  return posts;
 }
 
 export async function getPostContent(pageId: string): Promise<string> {
@@ -132,15 +136,13 @@ export async function getPostContent(pageId: string): Promise<string> {
 }
 
 export async function getPostIdBySlug(slug: string): Promise<string | null> {
-    // This is a bit inefficient if we don't have the ID, but needed if we only have slug
-    // For this app, we might pass the Notion ID to the frontend to make this faster
     const databaseId = getDatabaseId();
     const response = await notion.databases.query({
         database_id: databaseId,
         filter: {
             and: [
                 { property: "Status", status: { equals: "Done" } },
-                { property: "Slug", rich_text: { equals: slug } } // Fallback if exact match
+                { property: "Slug", rich_text: { equals: slug } } 
             ]
         }
     });
