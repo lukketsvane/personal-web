@@ -8,7 +8,7 @@ import { MDXRemote } from 'next-mdx-remote'
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
-import { Link2 } from 'lucide-react'
+import { Link2, Minus } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
@@ -32,6 +32,7 @@ const mdxComponents = {
   ImageGallery: ImageGallery,
   ModelViewer: ModelViewer,
   Button: Button,
+  Minus: Minus,
   Image: (props: any) => {
     // If it's used as <Image /> in MDX, it might not have width/height
     if (!props.width && !props.height && !props.fill) {
