@@ -4,8 +4,6 @@ import { useState, useEffect, useMemo } from "react"
 import { Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { serialize } from 'next-mdx-remote/serialize'
-import remarkGfm from 'remark-gfm'
 import { motion } from 'framer-motion'
 import { cn } from "@/lib/utils"
 import { MDXCard } from "./mdx-card"
@@ -23,6 +21,7 @@ interface Post {
   image?: string
   coverimage?: string
   content: string
+  serialized?: MDXRemoteSerializeResult
   url?: string
   icon?: string
   thumbnails?: { src: string; alt: string }[]
@@ -89,7 +88,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
-  const [serializedContents, setSerializedContents] = useState<Record<string, MDXRemoteSerializeResult | null>>({})
   const [error, setError] = useState<string | null>(null)
   const [showAllTags, setShowAllTags] = useState(false)
 
@@ -110,34 +108,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   useEffect(() => {
     setPosts(initialPosts)
   }, [initialPosts])
-
-  useEffect(() => {
-    const serializeContent = async (uid: string, content: string) => {
-      if (!serializedContents[uid] && expandedPosts.has(uid)) {
-        try {
-          const result = await serialize(content, {
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              format: 'mdx',
-              development: process.env.NODE_ENV === 'development',
-            },
-            parseFrontmatter: true,
-          })
-          setSerializedContents(prev => ({ ...prev, [uid]: result }))
-        } catch (error) {
-          console.error('Error serializing MDX for uid:', uid, error)
-          setSerializedContents(prev => ({ ...prev, [uid]: null }))
-        }
-      }
-    }
-
-    expandedPosts.forEach(uid => {
-      const post = posts.find(p => p.uid === uid)
-      if (post?.content) {
-        serializeContent(post.uid, post.content)
-      }
-    })
-  }, [expandedPosts, posts, serializedContents])
 
   const filteredPosts = useMemo(() => {
     try {
@@ -163,25 +133,25 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         const next = new Set(prev)
         if (next.has(uid)) {
           next.delete(uid)
-        } else {
-          next.add(uid)
-        }
-        return next
+          return next
+        } 
+        return next.add(uid)
       })
 
       const postIndex = posts.findIndex(p => p.uid === uid)
       if (postIndex === -1) return
 
       const post = posts[postIndex]
-      if (!post.content && post.id) {
+      // Check if we already have the serialized content
+      if (!post.serialized && post.id) {
           try {
             const res = await fetch(`/api/posts/${post.id}`)
             if (res.ok) {
                 const data = await res.json()
-                if (data.content) {
+                if (data.source) {
                     setPosts(prev => {
                         const newPosts = [...prev]
-                        newPosts[postIndex] = { ...post, content: data.content }
+                        newPosts[postIndex] = { ...post, serialized: data.source }
                         return newPosts
                     })
                 }
@@ -283,7 +253,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                 post={post}
                 isExpanded={expandedPosts.has(post.uid)}
                 onToggle={() => handlePostToggle(post.uid)}
-                serializedContent={serializedContents[post.uid]}
+                serializedContent={post.serialized || null}
               />
             ))
           ) : (

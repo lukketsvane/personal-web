@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPostContent } from '@/lib/notion'
+import { serialize } from 'next-mdx-remote/serialize'
+import remarkGfm from 'remark-gfm'
 
 export const revalidate = 60;
 
@@ -10,10 +12,19 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id
-    const content = await getPostContent(id)
-    return NextResponse.json({ content })
+    const rawContent = await getPostContent(id)
+    
+    const serialized = await serialize(rawContent, {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        format: 'mdx',
+      },
+      parseFrontmatter: true,
+    })
+
+    return NextResponse.json({ source: serialized })
   } catch (error) {
-    console.error('Error fetching post content:', error)
-    return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 })
+    console.error('Error fetching/serializing post content:', error)
+    return NextResponse.json({ error: 'Failed to process content' }, { status: 500 })
   }
 }

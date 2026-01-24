@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import MDXBlog from '@/components/mdx-blog'
 
+import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
+
 interface Post {
   uid: string
   id?: string
@@ -14,6 +16,7 @@ interface Post {
   type: "writing" | "books" | "projects" | "outgoing_links"
   image?: string
   content: string
+  serialized?: MDXRemoteSerializeResult
   thumbnails?: { src: string; alt: string }[]
 }
 
