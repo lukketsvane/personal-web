@@ -7,15 +7,21 @@ export const revalidate = 60;
 
 export async function GET() {
   try {
+    console.log('Fetching posts from Notion...');
     const posts = await getPublishedPosts()
+    console.log(`Successfully fetched ${posts.length} posts`);
+    
     if (posts.length === 0) {
-       // Return empty array instead of 404 to avoid breaking UI
+       console.log('No posts found with status "Done"');
        return NextResponse.json([])
     }
     return NextResponse.json(posts)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching posts from Notion:', error)
-    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'Failed to fetch posts',
+      details: error.message 
+    }, { status: 500 })
   }
 }
 
