@@ -201,6 +201,8 @@ async function syncNotion() {
       return;
     }
 
+    const validFiles = new Set();
+
     for (const page of pages) {
       const props = await getPageProperties(page);
       
@@ -251,6 +253,24 @@ async function syncNotion() {
 
       const filePath = path.join(outputDir, `${props.slug}.mdx`);
       fs.writeFileSync(filePath, fileContent);
+      validFiles.add(filePath);
+    }
+
+    // 5. Cleanup: Delete files not in Notion
+    console.log("🧹 Cleaning up old files...");
+    const contentDirs = ["writing", "books", "projects", "outgoing_links"];
+    for (const dir of contentDirs) {
+      const dirPath = path.join(process.cwd(), "content", dir);
+      if (fs.existsSync(dirPath)) {
+        const files = fs.readdirSync(dirPath);
+        for (const file of files) {
+          const fullPath = path.join(dirPath, file);
+          if (!validFiles.has(fullPath) && file.endsWith(".mdx")) {
+            console.log(`    🗑️  Deleting orphaned file: ${dir}/${file}`);
+            fs.unlinkSync(fullPath);
+          }
+        }
+      }
     }
 
     console.log("✨ Sync complete!");
