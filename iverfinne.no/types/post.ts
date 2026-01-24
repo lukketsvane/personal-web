@@ -1,5 +1,6 @@
 export interface Post {
   uid: string
+  id?: string // Notion Page ID
   title: string
   description: string
   date: string

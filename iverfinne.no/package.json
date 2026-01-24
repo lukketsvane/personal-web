@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "sync": "node scripts/sync-notion.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@google/model-viewer": "^4.1.0",

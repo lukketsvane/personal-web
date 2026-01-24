@@ -5,6 +5,7 @@ import MDXBlog from '@/components/mdx-blog'
 
 interface Post {
   uid: string
+  id?: string
   title: string
   description: string
   date: string

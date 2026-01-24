@@ -13,6 +13,7 @@ import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
 interface Post {
   uid: string
+  id?: string
   title: string
   description: string
   date: string
@@ -156,7 +157,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     }
   }, [posts, search, selectedTypes, selectedTags])
 
-  const handlePostToggle = (uid: string) => {
+  const handlePostToggle = async (uid: string) => {
     try {
       setExpandedPosts(prev => {
         const next = new Set(prev)
@@ -167,6 +168,29 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         }
         return next
       })
+
+      const postIndex = posts.findIndex(p => p.uid === uid)
+      if (postIndex === -1) return
+
+      const post = posts[postIndex]
+      if (!post.content && post.id) {
+          try {
+            const res = await fetch(`/api/posts/${post.id}`)
+            if (res.ok) {
+                const data = await res.json()
+                if (data.content) {
+                    setPosts(prev => {
+                        const newPosts = [...prev]
+                        newPosts[postIndex] = { ...post, content: data.content }
+                        return newPosts
+                    })
+                }
+            }
+          } catch (e) {
+            console.error("Failed to fetch post content", e)
+          }
+      }
+
     } catch (err) {
       console.error('Error toggling post:', err)
       setError('Failed to expand post')
