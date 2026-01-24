@@ -9,11 +9,47 @@ import { MDXRemote } from 'next-mdx-remote'
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from "@/lib/utils"
-import { Link2, Minus, Plus, Trash2 } from 'lucide-react'
+import { 
+  Link2, 
+  Minus, 
+  Plus, 
+  Trash2, 
+  X, 
+  Check, 
+  ChevronRight, 
+  ChevronLeft, 
+  ExternalLink, 
+  Github, 
+  Twitter, 
+  Mail, 
+  Globe, 
+  Calendar, 
+  Clock, 
+  User, 
+  Tag, 
+  Search, 
+  Menu, 
+  ArrowRight, 
+  ArrowLeft,
+  Settings,
+  Info,
+  AlertCircle,
+  AlertTriangle,
+  Eye,
+  EyeOff,
+  Copy,
+  Download,
+  Share2,
+  Heart,
+  Star,
+  Home
+} from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
   ssr: false,
@@ -34,9 +70,47 @@ const mdxComponents = {
   ModelViewer: ModelViewer,
   Button: Button,
   Textarea: Textarea,
+  Input: Input,
+  Badge: Badge,
+  Card: Card,
+  CardHeader: CardHeader,
+  CardTitle: CardTitle,
+  CardDescription: CardDescription,
+  CardContent: CardContent,
+  CardFooter: CardFooter,
+  // Icons
   Minus: Minus,
   Plus: Plus,
   Trash2: Trash2,
+  X: X,
+  Check: Check,
+  ChevronRight: ChevronRight,
+  ChevronLeft: ChevronLeft,
+  ExternalLink: ExternalLink,
+  Github: Github,
+  Twitter: Twitter,
+  Mail: Mail,
+  Globe: Globe,
+  Calendar: Calendar,
+  Clock: Clock,
+  User: User,
+  Tag: Tag,
+  Search: Search,
+  Menu: Menu,
+  ArrowRight: ArrowRight,
+  ArrowLeft: ArrowLeft,
+  Settings: Settings,
+  Info: Info,
+  AlertCircle: AlertCircle,
+  AlertTriangle: AlertTriangle,
+  Eye: Eye,
+  EyeOff: EyeOff,
+  Copy: Copy,
+  Download: Download,
+  Share2: Share2,
+  Heart: Heart,
+  Star: Star,
+  Home: Home,
   Image: (props: any) => {
     // If it's used as <Image /> in MDX, it might not have width/height
     if (!props.width && !props.height && !props.fill) {
