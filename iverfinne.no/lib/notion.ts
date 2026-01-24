@@ -2,11 +2,9 @@ import { Client } from "@notionhq/client";
 import { NotionToMarkdown } from "notion-to-md";
 import { Post } from "@/types/post";
 
-if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
-  throw new Error("Missing Notion API Key or Database ID");
-}
-
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
+const notion = new Client({
+  auth: process.env.NOTION_API_KEY,
+});
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 const TYPE_MAPPING: Record<string, "writing" | "books" | "projects" | "outgoing_links"> = {
@@ -15,6 +13,21 @@ const TYPE_MAPPING: Record<string, "writing" | "books" | "projects" | "outgoing_
   "Project": "projects",
   "Link": "outgoing_links"
 };
+
+function getDatabaseId() {
+    let dbId = process.env.NOTION_DATABASE_ID;
+    if (!dbId) {
+        throw new Error("Missing NOTION_DATABASE_ID");
+    }
+    // Add dashes if missing
+    if (!dbId.includes('-')) {
+        dbId = dbId.replace(
+            /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/,
+            '$1-$2-$3-$4-$5'
+        );
+    }
+    return dbId;
+}
 
 // Helper to extract properties safely
 function getPageProperties(page: any) {
@@ -79,8 +92,9 @@ function getPageProperties(page: any) {
 }
 
 export async function getPublishedPosts(): Promise<Post[]> {
+  const databaseId = getDatabaseId();
   const response = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID!,
+    database_id: databaseId,
     filter: {
       property: "Status",
       status: {
@@ -117,8 +131,9 @@ export async function getPostContent(pageId: string): Promise<string> {
 export async function getPostIdBySlug(slug: string): Promise<string | null> {
     // This is a bit inefficient if we don't have the ID, but needed if we only have slug
     // For this app, we might pass the Notion ID to the frontend to make this faster
+    const databaseId = getDatabaseId();
     const response = await notion.databases.query({
-        database_id: process.env.NOTION_DATABASE_ID!,
+        database_id: databaseId,
         filter: {
             and: [
                 { property: "Status", status: { equals: "Done" } },
