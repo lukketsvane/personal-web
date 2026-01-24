@@ -11,10 +11,11 @@ import { Link2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
+import { ModelViewer } from "@/components/model-viewer"
 
 const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
   ssr: false,
-  loading: () => <div className="w-full h-full flex items-center justify-center">Loading 3D Scene...</div>
+  loading: () => <div className="w-full h-full flex items-center justify-center"></div>
 })
 
 const mdxComponents = {
@@ -28,6 +29,7 @@ const mdxComponents = {
   pre: (props: any) => <pre {...props} className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto whitespace-pre-wrap break-words" />,
   code: (props: any) => <code {...props} className="bg-gray-800 text-gray-100 rounded px-1.5 py-0.5 whitespace-pre-wrap break-words" />,
   ImageGallery: ImageGallery,
+  ModelViewer: ModelViewer,
   iframe: (props: any) => (
     <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden mb-4">
       <iframe {...props} className="absolute inset-0 w-full h-full border-0" />
@@ -237,12 +239,22 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                     key={`${post.slug}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
                   >
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      className="object-cover"
-                    />
+                    {img.src.endsWith('.glb') ? (
+                      <ModelViewer 
+                        src={img.src} 
+                        alt={img.alt} 
+                        disableZoom={true} 
+                        disablePan={true}
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                 ))}
               </div>

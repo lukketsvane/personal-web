@@ -42,7 +42,7 @@ export default function MDXBlogWrapper() {
   }, [])
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>.</div>
   }
 
   if (error) {
