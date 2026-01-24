@@ -39,6 +39,7 @@ const mdxComponents = {
 }
 
 interface Post {
+  uid: string
   title: string
   description: string
   date: string
@@ -143,7 +144,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       <div className="flex gap-1.5 flex-wrap">
         {tagsToShow.map((tag) => (
           <Badge 
-            key={`${post.slug}-tag-${tag}`}
+            key={`${post.uid}-tag-${tag}`}
             variant="secondary"
             className={cn(
               "text-xs px-2 py-0.5 rounded-full font-medium transition-colors text-white",
@@ -236,7 +237,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {post.thumbnails.slice(0, 3).map((img, i) => (
                   <div 
-                    key={`${post.slug}-thumb-${i}`}
+                    key={`${post.uid}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
                   >
                     {img.src.endsWith('.glb') ? (

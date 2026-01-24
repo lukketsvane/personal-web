@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import MDXBlog from '@/components/mdx-blog'
 
 interface Post {
+  uid: string
   title: string
   description: string
   date: string

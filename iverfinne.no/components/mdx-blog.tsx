@@ -12,6 +12,7 @@ import { MDXCard } from "./mdx-card"
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
 interface Post {
+  uid: string
   title: string
   description: string
   date: string
@@ -110,8 +111,8 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   }, [initialPosts])
 
   useEffect(() => {
-    const serializeContent = async (slug: string, content: string) => {
-      if (!serializedContents[slug] && expandedPosts.has(slug)) {
+    const serializeContent = async (uid: string, content: string) => {
+      if (!serializedContents[uid] && expandedPosts.has(uid)) {
         try {
           const result = await serialize(content, {
             mdxOptions: {
@@ -121,18 +122,18 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
             },
             parseFrontmatter: true,
           })
-          setSerializedContents(prev => ({ ...prev, [slug]: result }))
+          setSerializedContents(prev => ({ ...prev, [uid]: result }))
         } catch (error) {
-          console.error('Error serializing MDX for slug:', slug, error)
-          setSerializedContents(prev => ({ ...prev, [slug]: null }))
+          console.error('Error serializing MDX for uid:', uid, error)
+          setSerializedContents(prev => ({ ...prev, [uid]: null }))
         }
       }
     }
 
-    expandedPosts.forEach(slug => {
-      const post = posts.find(p => p.slug === slug)
+    expandedPosts.forEach(uid => {
+      const post = posts.find(p => p.uid === uid)
       if (post?.content) {
-        serializeContent(post.slug, post.content)
+        serializeContent(post.uid, post.content)
       }
     })
   }, [expandedPosts, posts, serializedContents])
@@ -155,14 +156,14 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     }
   }, [posts, search, selectedTypes, selectedTags])
 
-  const handlePostToggle = (slug: string) => {
+  const handlePostToggle = (uid: string) => {
     try {
       setExpandedPosts(prev => {
         const next = new Set(prev)
-        if (next.has(slug)) {
-          next.delete(slug)
+        if (next.has(uid)) {
+          next.delete(uid)
         } else {
-          next.add(slug)
+          next.add(uid)
         }
         return next
       })
@@ -254,11 +255,11 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
               <MDXCard
-                key={post.slug}
+                key={post.uid}
                 post={post}
-                isExpanded={expandedPosts.has(post.slug)}
-                onToggle={() => handlePostToggle(post.slug)}
-                serializedContent={serializedContents[post.slug]}
+                isExpanded={expandedPosts.has(post.uid)}
+                onToggle={() => handlePostToggle(post.uid)}
+                serializedContent={serializedContents[post.uid]}
               />
             ))
           ) : (
@@ -271,4 +272,3 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     </div>
   )
 }
-

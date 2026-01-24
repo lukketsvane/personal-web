@@ -30,14 +30,16 @@ async function getPostsFromDirectory(directory: string): Promise<Post[]> {
         const filePath = path.join(postsDirectory, fileName)
         const fileContent = await fs.readFile(filePath, 'utf8')
         const { data, content } = matter(fileContent)
+        const slug = fileName.replace(/\.mdx$/, '')
         
         return {
+          uid: `${directory}-${slug}`,
           title: data.title || 'Untitled',
           description: data.description || '',
           date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
           tags: data.tags || [],
           type: data.type || directory,
-          slug: fileName.replace(/\.mdx$/, ''),
+          slug: slug,
           content: content,
           ...(data.image && { image: data.image }),
           ...(data.url && { url: data.url }),
