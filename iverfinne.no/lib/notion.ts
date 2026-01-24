@@ -5,6 +5,9 @@ import { Post } from "@/types/post";
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
+
+console.log("Notion Client initialized. Query method exists:", typeof notion.databases?.query);
+
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 const TYPE_MAPPING: Record<string, "writing" | "books" | "projects" | "outgoing_links"> = {
