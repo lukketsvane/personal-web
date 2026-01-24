@@ -30,14 +30,15 @@ export default function MDXBlogWrapper() {
       try {
         const response = await fetch('/api/posts')
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.details || errorData.error || `HTTP error! status: ${response.status}`)
         }
         const data = await response.json()
         console.log('Fetched posts:', data)
         setPosts(data)
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching posts:', error)
-        setError('Failed to fetch posts. Please try again later.')
+        setError(error.message || 'Failed to fetch posts. Please try again later.')
       } finally {
         setIsLoading(false)
       }
@@ -47,11 +48,22 @@ export default function MDXBlogWrapper() {
   }, [])
 
   if (isLoading) {
-    return <div>.</div>
+    return <div className="flex items-center justify-center p-8">.</div>
   }
 
   if (error) {
-    return <div>{error}</div>
+    return (
+      <div className="p-4 border border-red-200 bg-red-50 text-red-700 rounded-md">
+        <p className="font-medium">Error loading posts</p>
+        <p className="text-sm">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-2 text-sm underline hover:no-underline"
+        >
+          Try again
+        </button>
+      </div>
+    )
   }
 
   return posts.length > 0 ? (
