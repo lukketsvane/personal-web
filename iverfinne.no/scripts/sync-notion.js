@@ -159,7 +159,8 @@ async function getPageProperties(page) {
     type: mappedType,
     tags,
     image,
-    id: page.id
+    id: page.id,
+    lastModified: page.last_edited_time
   };
 }
 
@@ -205,7 +206,31 @@ async function syncNotion() {
 
     for (const page of pages) {
       const props = await getPageProperties(page);
+      const targetDir = ["writing", "books", "projects", "outgoing_links"].includes(props.type) ? props.type : "writing";
+      const outputDir = path.join(process.cwd(), "content", targetDir);
+      const filePath = path.join(outputDir, `${props.slug}.mdx`);
       
+      // Check for incremental sync
+      let skip = false;
+      if (fs.existsSync(filePath)) {
+        try {
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          const existingMatter = matter(fileContent);
+          if (existingMatter.data.lastModified === props.lastModified) {
+             skip = true;
+          }
+        } catch (e) {
+          // If error reading, just re-sync
+        }
+      }
+
+      validFiles.add(filePath);
+
+      if (skip) {
+        // console.log(`    ⏭️  Skipping unchanged: ${props.title}`); 
+        continue;
+      }
+
       console.log(`Processing: ${props.title} -> content/${props.type}/${props.slug}.mdx`);
 
       // 1. Convert Body to Markdown
@@ -236,6 +261,7 @@ async function syncNotion() {
         date: props.date,
         tags: props.tags,
         type: ["writing", "books", "projects", "outgoing_links"].includes(props.type) ? props.type : "writing",
+        lastModified: props.lastModified,
       };
 
       if (coverImage) {
@@ -244,16 +270,12 @@ async function syncNotion() {
       }
 
       const fileContent = matter.stringify(mdString, frontmatter);
-      const targetDir = ["writing", "books", "projects", "outgoing_links"].includes(props.type) ? props.type : "writing";
-      const outputDir = path.join(process.cwd(), "content", targetDir);
       
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      const filePath = path.join(outputDir, `${props.slug}.mdx`);
       fs.writeFileSync(filePath, fileContent);
-      validFiles.add(filePath);
     }
 
     // 5. Cleanup: Delete files not in Notion
