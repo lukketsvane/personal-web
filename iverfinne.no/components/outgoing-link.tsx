@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic'
 
 const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
   ssr: false,
-  loading: () => <p>Loading 3D Scene...</p>
+  loading: () => <p></p>
 })
 
 interface OutgoingLink {
