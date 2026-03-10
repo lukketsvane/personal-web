@@ -12,6 +12,8 @@ export const getTagColor = (tag: string) => {
       return "bg-purple-500 text-white"
     case "lenkje":
       return "bg-orange-500 text-white"
+    case "interaktiv":
+      return "bg-pink-500 text-white"
     
     // Emneknaggar (matching existing patterns)
     case "teiknspråk":

@@ -10,15 +10,17 @@ const notion = new Client({
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
-const TYPE_MAPPING: Record<string, "Skriving" | "Bok" | "Prosjekt" | "Lenkje"> = {
+const TYPE_MAPPING: Record<string, "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv"> = {
   "Skriving": "Skriving",
   "Bok": "Bok",
   "Prosjekt": "Prosjekt",
   "Lenkje": "Lenkje",
+  "Interaktiv": "Interaktiv",
   "Writing": "Skriving",
   "Book": "Bok",
   "Project": "Prosjekt",
-  "Link": "Lenkje"
+  "Link": "Lenkje",
+  "Interactive": "Interaktiv"
 };
 
 function getDatabaseId() {

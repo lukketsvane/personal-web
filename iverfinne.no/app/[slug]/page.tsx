@@ -9,6 +9,7 @@ import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
 import WebDesignKeys from '@/components/WebDesignKeys'
+import { HtmlIframe } from "@/components/html-iframe"
 import { getTagColor } from "@/lib/tag-utils"
 import { cn } from "@/lib/utils"
 
@@ -38,6 +39,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   if (!post) {
     notFound()
+  }
+
+  if (post.type === "Interaktiv") {
+    return <HtmlIframe content={post.content} fullScreen={true} />
   }
 
   const dateObj = new Date(post.date)

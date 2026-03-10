@@ -6,7 +6,7 @@ export interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv"
   image?: string
   content: string
   url?: string

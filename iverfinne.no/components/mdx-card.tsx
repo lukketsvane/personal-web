@@ -48,6 +48,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { getTagColor } from "@/lib/tag-utils"
 import { ImageGallery } from "@/components/image-gallery"
+import { HtmlIframe } from "@/components/html-iframe"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
@@ -354,7 +355,9 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   className="overflow-hidden mt-4"
                 >
                   <div className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words">
-                    {serializedContent ? (
+                    {post.type === "Interaktiv" ? (
+                      <HtmlIframe content={post.content} />
+                    ) : serializedContent ? (
                       <MDXRemote
                         {...serializedContent}
                         components={{
