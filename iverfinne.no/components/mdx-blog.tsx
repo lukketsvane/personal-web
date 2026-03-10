@@ -46,6 +46,7 @@ interface FilterButtonProps {
 
 const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterButtonProps) => {
   const color = getTagColor(label)
+  const [bg, text, border] = color.split(' ')
   
   const baseStyles = "text-xs px-3 py-1 h-auto font-normal transition-all"
   const variantStyles = {
@@ -53,13 +54,13 @@ const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterB
       "rounded-full border",
       isActive 
         ? color 
-        : "bg-white dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-800 hover:border-gray-300"
+        : cn(border, "bg-transparent text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800")
     ),
     tag: cn(
       "rounded-sm border",
       isActive 
         ? color 
-        : "bg-white dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-800 hover:border-gray-300"
+        : cn(border, "bg-transparent text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800")
     ),
     default: "bg-gray-100/50 hover:bg-gray-200/50 text-gray-600 rounded-full"
   }
