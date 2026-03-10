@@ -6,11 +6,12 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 export function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('nn-NO', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })
+  const d = new Date(date)
+  const day = d.toLocaleDateString('nn-NO', { day: '2-digit' })
+  const monthRaw = d.toLocaleDateString('nn-NO', { month: 'long' })
+  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
+  const year = d.getFullYear()
+  return `${day}. ${month} ${year}`
 }
 
 export function slugify(str: string): string {
