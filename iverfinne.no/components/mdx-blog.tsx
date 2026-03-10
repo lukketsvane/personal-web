@@ -195,7 +195,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         </div>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-1.5">
-            {uniqueTags.map((tag) => (
+            {uniqueTags.slice(0, 5).map((tag) => (
               <FilterButton
                 key={tag}
                 label={tag}
