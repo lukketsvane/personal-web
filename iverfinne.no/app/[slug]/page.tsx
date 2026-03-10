@@ -1,7 +1,6 @@
 import { getPublishedPosts, getPostBySlug } from '@/lib/notion'
 import { notFound } from 'next/navigation'
-import { MDXRemote } from 'next-mdx-remote'
-import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, Tag } from 'lucide-react'
@@ -9,11 +8,7 @@ import Link from 'next/link'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
-import dynamic from 'next/dynamic'
-
-const WebDesignKeys = dynamic(() => import('@/components/WebDesignKeys'), {
-  ssr: false
-})
+import WebDesignKeys from '@/components/WebDesignKeys'
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
@@ -42,13 +37,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) {
     notFound()
   }
-
-  const mdxSource = await serialize(post.content, {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm],
-      format: 'mdx',
-    },
-  })
 
   return (
     <article className="container max-w-4xl mx-auto px-4 py-12">
@@ -95,7 +83,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </header>
 
       <div className="prose dark:prose-invert max-w-none">
-        <MDXRemote {...mdxSource} components={components} />
+        <MDXRemote 
+          source={post.content} 
+          components={components}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm],
+            },
+            scope: {
+              material: {}
+            }
+          }}
+        />
       </div>
     </article>
   )

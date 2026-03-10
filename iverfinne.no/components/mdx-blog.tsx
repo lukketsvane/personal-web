@@ -142,7 +142,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
       if (postIndex === -1) return
 
       const post = posts[postIndex]
-      // Check if we already have the serialized content
+      // Content is now pre-serialized on server, but we keep fallback for robustness
       if (!post.serialized && post.id) {
           try {
             const res = await fetch(`/api/posts/${post.id}`)

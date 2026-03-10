@@ -19,6 +19,9 @@ export async function GET(
         remarkPlugins: [remarkGfm],
         format: 'mdx',
       },
+      scope: {
+        material: {} // Fiksar ReferenceError: material is not defined
+      },
       parseFrontmatter: true,
     })
 

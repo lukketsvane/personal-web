@@ -160,7 +160,7 @@ const TimelineConnector = () => (
   <div className="absolute left-0 sm:left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
 )
 
-const TimelineNode = ({ type, slug }: { type: string, slug: string }) => {
+const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }) => {
   const typeColors = {
     Skriving: "bg-blue-500",
     Bok: "bg-green-500",
@@ -169,12 +169,16 @@ const TimelineNode = ({ type, slug }: { type: string, slug: string }) => {
   }
   
   return (
-    <Link 
-      href={`/${slug}`}
+    <button 
+      onClick={(e) => {
+        e.stopPropagation()
+        onToggle()
+      }}
       className={cn(
-        "absolute left-0 sm:left-0 top-[1.125rem] w-3 h-3 sm:w-4 sm:h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10 transition-transform hover:scale-125",
+        "absolute left-0 sm:left-0 top-[1.125rem] w-3 h-3 sm:w-4 sm:h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10 transition-transform hover:scale-125 cursor-pointer",
         typeColors[type as keyof typeof typeColors] || "bg-gray-500"
       )} 
+      aria-label="Utvid eller skjul innhald"
     />
   )
 }
@@ -216,6 +220,9 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     if (post.type === "Lenkje" && post.url) {
       window.open(post.url, '_blank')
     } else {
+      // For andre typar gjer me no ingenting ved klikk på heile kortet,
+      // eller me kan la det framleis toggle viss ønskeleg.
+      // Men brukaren ba spesifikt om at tittelen skal opne eigen route.
       onToggle()
     }
   }
@@ -277,7 +284,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       </div>
       <div className="relative min-w-0">
         <div className="block">
-          <TimelineNode type={post.type} slug={post.slug} />
+          <TimelineNode type={post.type} onToggle={onToggle} />
           <TimelineConnector />
         </div>
         <div className="pb-8 pt-0">
@@ -297,7 +304,11 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-semibold tracking-tight mb-2">{post.title}</h2>
+                  <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
+                    <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                      {post.title}
+                    </h2>
+                  </Link>
                   {post.url && (
                     <button 
                       onClick={handleUrlClick}
@@ -373,7 +384,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   className="overflow-hidden mt-4"
                 >
                   <div className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words">
-                    {serializedContent && (
+                    {serializedContent ? (
                       <MDXRemote
                         {...serializedContent}
                         components={{
@@ -381,6 +392,10 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                           WebDesignKeys
                         }}
                       />
+                    ) : (
+                      <div className="flex items-center justify-center p-4 text-muted-foreground italic">
+                        Lastar innhald...
+                      </div>
                     )}
                   </div>
                 </motion.div>

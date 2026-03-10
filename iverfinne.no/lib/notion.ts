@@ -2,6 +2,7 @@
 import { Client } from "@notionhq/client";
 import { NotionToMarkdown } from "notion-to-md";
 import { Post } from "@/types/post";
+import { unstable_cache } from 'next/cache';
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
@@ -44,13 +45,22 @@ function getPageProperties(page: any) {
     return key ? props[key] : null;
   };
 
-  const getRichText = (name: string) => {
-    const prop = findProp(name);
-    if (!prop || !prop.rich_text || !Array.isArray(prop.rich_text)) return "";
-    return prop.rich_text[0]?.plain_text || "";
+  const getRichText = (names: string[]) => {
+    for (const name of names) {
+      const prop = findProp(name);
+      if (prop && prop.rich_text && Array.isArray(prop.rich_text)) {
+        return prop.rich_text[0]?.plain_text || "";
+      }
+    }
+    return "";
   };
 
   const getTitle = () => {
+    // Try "Namn" first, then any title property
+    const namnProp = findProp("Namn");
+    if (namnProp && namnProp.type === 'title' && namnProp.title?.[0]) {
+      return namnProp.title[0].plain_text;
+    }
     const titleKey = Object.keys(props).find(key => props[key] && props[key].type === 'title');
     if (!titleKey || !props[titleKey].title || !Array.isArray(props[titleKey].title)) return "Untitled";
     return props[titleKey].title[0]?.plain_text || "Untitled";
@@ -58,7 +68,7 @@ function getPageProperties(page: any) {
 
   const getSelect = (name: string) => {
     const prop = findProp(name);
-    return prop?.select?.name || prop?.status?.name; // Fallback to status name if it's a status property
+    return prop?.select?.name || prop?.status?.name;
   };
 
   const getDate = (name: string) => {
@@ -66,31 +76,38 @@ function getPageProperties(page: any) {
     return prop?.date?.start;
   };
 
-  const getMultiSelect = (name: string) => {
-    const prop = findProp(name);
-    if (!prop || !prop.multi_select || !Array.isArray(prop.multi_select)) return [];
-    return prop.multi_select.map((t: any) => t.name) || [];
+  const getMultiSelect = (names: string[]) => {
+    for (const name of names) {
+      const prop = findProp(name);
+      if (prop && prop.multi_select && Array.isArray(prop.multi_select)) {
+        return prop.multi_select.map((t: any) => t.name) || [];
+      }
+    }
+    return [];
   };
 
-  const getUrl = (name: string) => {
-    const prop = findProp(name);
-    return prop?.url || "";
+  const getUrl = (names: string[]) => {
+    for (const name of names) {
+      const prop = findProp(name);
+      if (prop && prop.url) return prop.url;
+    }
+    return "";
   };
 
   const title = getTitle();
-  let slug = getRichText("Slug");
+  let slug = getRichText(["Slug"]);
   if (!slug) {
      slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
   
-  const date = getDate("Date") || page.created_time.split('T')[0];
-  const description = getRichText("Summary") || getRichText("Description") || "";
+  const date = getDate("Dato") || getDate("Date") || page.created_time.split('T')[0];
+  const description = getRichText(["Samandrag", "Summary", "Description"]);
   
   let typeRaw = getSelect("Type") || "Skriving";
   const type = TYPE_MAPPING[typeRaw] || "Skriving";
 
-  const tags = getMultiSelect("Tags");
-  const url = getUrl("URL") || getUrl("Link") || "";
+  const tags = getMultiSelect(["Merkelappar", "Tags"]);
+  const url = getUrl(["URL", "Link", "Lenkje"]);
   
   let image: string | undefined = undefined;
   if (page.cover) {
@@ -130,57 +147,65 @@ function getPageProperties(page: any) {
   };
 }
 
-export async function getPublishedPosts(): Promise<Post[]> {
-  const databaseId = getDatabaseId();
-  console.log(`Querying Notion database: ${databaseId}`);
-  
-  try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: {
-        property: "Status",
-        status: {
-          equals: "Done"
-        }
-      },
-      sorts: [
-        {
-          property: "Date",
-          direction: "descending",
+export const getPublishedPosts = unstable_cache(
+  async (): Promise<Post[]> => {
+    const databaseId = getDatabaseId();
+    console.log(`Querying Notion database: ${databaseId}`);
+    
+    try {
+      const response = await notion.databases.query({
+        database_id: databaseId,
+        filter: {
+          or: [
+            { property: "Status", status: { equals: "Ferdig" } },
+            { property: "Status", status: { equals: "Done" } } // Fallback
+          ]
         },
-      ],
-    });
+        sorts: [
+          {
+            property: "Dato",
+            direction: "descending",
+          },
+        ],
+      });
 
-    console.log(`Notion returned ${response.results.length} results`);
+      console.log(`Notion returned ${response.results.length} results`);
 
-    const posts = response.results
-      .map((page): Post | null => {
-        try {
-          const props = getPageProperties(page);
-          return {
-            ...props,
-            content: "", 
-            thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
-          };
-        } catch (e) {
-          console.error(`Error processing Notion page ${page.id}:`, e);
-          return null;
-        }
-      })
-      .filter((post): post is Post => post !== null);
+      const posts = response.results
+        .map((page): Post | null => {
+          try {
+            const props = getPageProperties(page);
+            return {
+              ...props,
+              content: "", 
+              thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
+            };
+          } catch (e) {
+            console.error(`Error processing Notion page ${page.id}:`, e);
+            return null;
+          }
+        })
+        .filter((post): post is Post => post !== null);
 
-    return posts;
-  } catch (error: any) {
-    console.error("Notion API error:", error);
-    throw error;
-  }
-}
+      return posts;
+    } catch (error: any) {
+      console.error("Notion API error:", error);
+      throw error;
+    }
+  },
+  ['published-posts'],
+  { revalidate: 60, tags: ['posts'] }
+);
 
-export async function getPostContent(pageId: string): Promise<string> {
-  const mdblocks = await n2m.pageToMarkdown(pageId);
-  const mdObject = n2m.toMarkdownString(mdblocks);
-  return mdObject.parent || "";
-}
+export const getPostContent = unstable_cache(
+  async (pageId: string): Promise<string> => {
+    const mdblocks = await n2m.pageToMarkdown(pageId);
+    const mdObject = n2m.toMarkdownString(mdblocks);
+    return mdObject.parent || "";
+  },
+  ['post-content'],
+  { revalidate: 60, tags: ['posts'] }
+);
 
 export async function getPostIdBySlug(slug: string): Promise<string | null> {
     const databaseId = getDatabaseId();
@@ -188,7 +213,12 @@ export async function getPostIdBySlug(slug: string): Promise<string | null> {
         database_id: databaseId,
         filter: {
             and: [
-                { property: "Status", status: { equals: "Done" } },
+                {
+                  or: [
+                    { property: "Status", status: { equals: "Ferdig" } },
+                    { property: "Status", status: { equals: "Done" } }
+                  ]
+                },
                 { property: "Slug", rich_text: { equals: slug } } 
             ]
         }
@@ -206,7 +236,12 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     database_id: databaseId,
     filter: {
       and: [
-        { property: "Status", status: { equals: "Done" } },
+        {
+          or: [
+            { property: "Status", status: { equals: "Ferdig" } },
+            { property: "Status", status: { equals: "Done" } }
+          ]
+        },
         { property: "Slug", rich_text: { equals: slug } }
       ]
     }
