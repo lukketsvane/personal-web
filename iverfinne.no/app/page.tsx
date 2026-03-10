@@ -17,10 +17,10 @@ export default async function Home() {
           format: 'mdx',
         },
         scope: {
-          material: {}, tid: {}, geografi: {}, geometri: {}, design: {}, kultur: {}, norsk: {}, historie: {}, 
-          materiale: {}, skriving: {}, teknologi: {}, kunst: {}, filosofi: {}, berekraft: {}, landbruk: {},
-          innovasjon: {}, utdanning: {}, spel: {}, fotografi: {}, marknadsføring: {}, verktøy: {}, skisser: {},
-          algoritmar: {}, kreativitet: {}, automatisering: {}, tilgjenge: {}, datastrukturar: {}
+          material: "", tid: "", geografi: "", geometri: "", design: "", kultur: "", norsk: "", historie: "", 
+          materiale: "", skriving: "", teknologi: "", kunst: "", filosofi: "", berekraft: "", landbruk: "",
+          innovasjon: "", utdanning: "", spel: "", fotografi: "", marknadsføring: "", verktøy: "", skisser: "",
+          algoritmar: "", kreativitet: "", automatisering: "", tilgjenge: "", datastrukturar: ""
         }
       })
       return { ...post, serialized }
