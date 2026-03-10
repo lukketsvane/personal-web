@@ -42,7 +42,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const month = dateObj.toLocaleDateString('nn-NO', { month: 'long' }).toLowerCase()
+  const monthRaw = dateObj.toLocaleDateString('nn-NO', { month: 'long' })
+  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
   const year = dateObj.getFullYear()
 
   return (
@@ -59,7 +60,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">{post.title}</h1>
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-          <div className="flex items-center gap-2 text-muted-foreground lowercase">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <time dateTime={post.date}>
               <span className="font-extrabold">{day}.</span> {month} {year}

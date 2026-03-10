@@ -80,10 +80,6 @@ const mdxComponents = {
   CardDescription: CardDescription,
   CardContent: CardContent,
   CardFooter: CardFooter,
-  useRef: useRef,
-  useEffect: useEffect,
-  useMemo: useMemo,
-  useState: useState,
   // Icons
   Minus: Minus,
   Plus: Plus,
@@ -245,12 +241,13 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const month = dateObj.toLocaleDateString('nn-NO', { month: 'long' }).toLowerCase()
+  const monthRaw = dateObj.toLocaleDateString('nn-NO', { month: 'long' })
+  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
 
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
-        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap lowercase">
+        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap">
           <span className="font-extrabold">{day}.</span> {month}
         </time>
       </div>
