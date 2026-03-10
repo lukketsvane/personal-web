@@ -66,7 +66,7 @@ const mdxComponents = {
   h4: (props: any) => <h4 {...props} className="text-base font-medium mt-2 mb-1 break-words" />,
   h5: (props: any) => <h5 {...props} className="text-sm font-medium mt-2 mb-1 break-words" />,
   h6: (props: any) => <h6 {...props} className="text-xs font-medium mt-2 mb-1 break-words" />,
-  p: (props: any) => <p {...props} className="break-words" />,
+  p: (props: any) => <p {...props} className="break-words font-serif text-base" />,
   pre: (props: any) => <pre {...props} className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto whitespace-pre-wrap break-words" />,
   code: (props: any) => <code {...props} className="bg-gray-800 text-gray-100 rounded px-1.5 py-0.5 whitespace-pre-wrap break-words" />,
   ImageGallery: ImageGallery,
@@ -183,6 +183,8 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
 }
 
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState<number | null>(null)
+
   const renderTags = () => {
     return (
       <div className="flex gap-1.5 flex-wrap">
@@ -225,6 +227,14 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   const monthName = monthsFull[monthIdx].toLowerCase()
   const month = monthName.length > 4 ? monthsShort[monthIdx].toLowerCase() : monthName
 
+  const handleCardClick = () => {
+    if (post.type === "Bilete") {
+      setSelectedGalleryImage(0)
+    } else {
+      onToggle()
+    }
+  }
+
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
@@ -234,7 +244,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       </div>
       <div className="relative min-w-0">
         <div className="block">
-          <TimelineNode type={post.type} onToggle={onToggle} />
+          <TimelineNode type={post.type} onToggle={handleCardClick} />
           <TimelineConnector />
         </div>
         <div className="pb-8 pt-0">
@@ -246,7 +256,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               post.type === "Lenkje" && "hover:cursor-alias",
               "ml-0"
             )}
-            onClick={onToggle}
+            onClick={handleCardClick}
             initial={false}
             animate={{ backgroundColor: isExpanded ? "rgba(0,0,0,0.02)" : "transparent" }}
             whileTap={{ scale: 0.995 }}
@@ -288,7 +298,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
                     <span className="font-extrabold">{day}.</span> {month}
                   </time>
-                  <p className="text-muted-foreground text-sm">{post.description}</p>
+                  <p className="text-muted-foreground text-sm font-serif">{post.description}</p>
                 </div>
                 {post.type === "Bok" && post.icon && (
                   <div className="relative w-16 h-16 shrink-0">
@@ -315,6 +325,12 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   <div 
                     key={`${post.uid}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
+                    onClick={(e) => {
+                      if (post.type === "Bilete") {
+                        e.stopPropagation()
+                        setSelectedGalleryImage(i)
+                      }
+                    }}
                   >
                     {img.src.endsWith('.glb') ? (
                       <ModelViewer 
@@ -347,9 +363,20 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             {/* Tags */}
             {renderTags()}
 
+            {/* Hidden Gallery Trigger for "Bilete" */}
+            {post.type === "Bilete" && (
+              <div className="hidden">
+                <ImageGallery 
+                  images={post.thumbnails || []} 
+                  initialIndex={selectedGalleryImage}
+                  onIndexChange={setSelectedGalleryImage}
+                />
+              </div>
+            )}
+
             {/* Expanded Content */}
             <AnimatePresence mode="wait">
-              {isExpanded && (
+              {isExpanded && post.type !== "Bilete" && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -363,8 +390,6 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   >
                     {post.type === "Interaktiv" ? (
                       <HtmlIframe content={post.content} />
-                    ) : post.type === "Bilete" ? (
-                      <ImageGallery images={post.thumbnails || []} />
                     ) : serializedContent ? (
                       <MDXRemote
                         {...serializedContent}

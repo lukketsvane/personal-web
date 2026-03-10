@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ImageGalleryProps {
   images: {
@@ -12,22 +13,33 @@ interface ImageGalleryProps {
     alt: string
   }[]
   className?: string
+  initialIndex?: number | null
+  onIndexChange?: (index: number | null) => void
 }
 
-export function ImageGallery({ images = [], className }: ImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
+export function ImageGallery({ images = [], className, initialIndex = null, onIndexChange }: ImageGalleryProps) {
+  const [internalIndex, setInternalIndex] = useState<number | null>(null)
+  
+  const selectedImage = initialIndex !== null ? initialIndex : internalIndex
+  const setSelectedImage = (index: number | null) => {
+    if (onIndexChange) {
+      onIndexChange(index)
+    } else {
+      setInternalIndex(index)
+    }
+  }
 
-  const handlePrevious = useCallback((e?: React.MouseEvent) => {
+  const handlePrevious = useCallback((e?: React.MouseEvent | any) => {
     if (!images || images.length === 0) return
-    e?.stopPropagation() // Prevent closing dialog
-    setSelectedImage(prev => prev !== null ? (prev - 1 + images.length) % images.length : null)
-  }, [images?.length])
+    e?.stopPropagation()
+    setSelectedImage(selectedImage !== null ? (selectedImage - 1 + images.length) % images.length : null)
+  }, [images?.length, selectedImage])
 
-  const handleNext = useCallback((e?: React.MouseEvent) => {
+  const handleNext = useCallback((e?: React.MouseEvent | any) => {
     if (!images || images.length === 0) return
-    e?.stopPropagation() // Prevent closing dialog
-    setSelectedImage(prev => prev !== null ? (prev + 1) % images.length : null)
-  }, [images?.length])
+    e?.stopPropagation()
+    setSelectedImage(selectedImage !== null ? (selectedImage + 1) % images.length : null)
+  }, [images?.length, selectedImage])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,9 +62,9 @@ export function ImageGallery({ images = [], className }: ImageGalleryProps) {
 
   return (
     <>
-      <Card className={cn("w-full max-w-[100vw]", className)}>
-        <div className="relative w-full overflow-x-auto">
-          <div className="flex gap-4 w-max p-6 max-w-[1400px] mx-auto">
+      <Card className={cn("w-full max-w-[100vw] overflow-hidden border-none bg-transparent shadow-none", className)}>
+        <div className="relative w-full overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 w-max py-2 px-1">
             {images.map((image, index) => (
               <img
                 key={index}
@@ -62,8 +74,8 @@ export function ImageGallery({ images = [], className }: ImageGalleryProps) {
                   e.stopPropagation()
                   setSelectedImage(index)
                 }}
-                className="h-[300px] w-auto rounded-lg object-cover cursor-pointer transition-transform hover:scale-[1.02]"
-                style={{ maxWidth: 'min(800px, 90vw)' }}
+                className="h-[250px] sm:h-[350px] w-auto rounded-lg object-cover cursor-pointer transition-all hover:brightness-90"
+                style={{ maxWidth: 'min(800px, 85vw)' }}
               />
             ))}
           </div>
@@ -77,60 +89,76 @@ export function ImageGallery({ images = [], className }: ImageGalleryProps) {
         }}
       >
         <DialogContent 
-          className="max-w-[95vw] max-h-[95vh] p-0 bg-transparent border-0"
-          onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the content
+          className="max-w-[100vw] max-h-[100vh] p-0 bg-black/95 border-0 rounded-none w-full h-full flex items-center justify-center z-[100]"
+          onClick={(e) => {
+            e.stopPropagation()
+            setSelectedImage(null)
+          }}
         >
           {selectedImage !== null && (
-            <>
+            <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
               <DialogTitle className="sr-only">
                 {images[selectedImage].alt || `Bilete ${selectedImage + 1} av ${images.length}`}
               </DialogTitle>
               
-              <div className="relative group">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedImage(null)
-                  }}
-                  className="absolute top-4 right-4 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors"
-                  aria-label="Lukk fullskjermsvising"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-                
-                <button
-                  onClick={handlePrevious}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Førre bilete"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                
-                <button
-                  onClick={handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Neste bilete"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedImage(null)
+                }}
+                className="absolute top-6 right-6 z-[110] rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
+                aria-label="Lukk"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              
+              <button
+                onClick={handlePrevious}
+                className="absolute left-6 top-1/2 -translate-y-1/2 z-[110] rounded-full bg-white/10 p-4 text-white hover:bg-white/20 transition-colors backdrop-blur-sm hidden sm:block"
+                aria-label="Førre"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              
+              <button
+                onClick={handleNext}
+                className="absolute right-6 top-1/2 -translate-y-1/2 z-[110] rounded-full bg-white/10 p-4 text-white hover:bg-white/20 transition-colors backdrop-blur-sm hidden sm:block"
+                aria-label="Neste"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
 
-                <img
+              <AnimatePresence mode='wait'>
+                <motion.img
+                  key={selectedImage}
                   src={images[selectedImage].src}
                   alt={images[selectedImage].alt}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  onDragEnd={(e, { offset, velocity }) => {
+                    const swipe = offset.x
+                    if (swipe < -50) {
+                      handleNext()
+                    } else if (swipe > 50) {
+                      handlePrevious()
+                    }
+                  }}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-auto max-h-[95vh] object-contain rounded-lg mx-auto"
-                  style={{ maxWidth: '95vw' }}
+                  className="max-w-[95vw] max-h-[90vh] object-contain select-none touch-none"
                 />
-                
-                <div className="absolute left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                  {selectedImage + 1} / {images.length}
-                </div>
+              </AnimatePresence>
+              
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/10 px-4 py-2 rounded-full text-white text-xs font-medium backdrop-blur-sm">
+                {selectedImage + 1} / {images.length}
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
     </>
   )
 }
-
