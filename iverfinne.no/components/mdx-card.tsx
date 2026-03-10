@@ -387,12 +387,6 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                           ...mdxComponents,
                           WebDesignKeys
                         }}
-                        scope={{
-                          material: "", tid: "", geografi: "", geometri: "", design: "", kultur: "", norsk: "", historie: "", 
-                          materiale: "", skriving: "", teknologi: "", kunst: "", filosofi: "", berekraft: "", landbruk: "",
-                          innovasjon: "", utdanning: "", spel: "", fotografi: "", marknadsføring: "", verktøy: "", skisser: "",
-                          algoritmar: "", kreativitet: "", automatisering: "", tilgjenge: "", datastrukturar: ""
-                        }}
                       />
                     ) : (
                       <div className="flex items-center justify-center p-4 text-muted-foreground italic">

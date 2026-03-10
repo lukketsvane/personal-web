@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getPostContent } from '@/lib/notion'
+import { getPostContent, getSafeScope } from '@/lib/notion'
 import { serialize } from 'next-mdx-remote/serialize'
 import remarkGfm from 'remark-gfm'
 
@@ -19,12 +19,7 @@ export async function GET(
         remarkPlugins: [remarkGfm],
         format: 'mdx',
       },
-      scope: {
-        material: "", tid: "", geografi: "", geometri: "", design: "", kultur: "", norsk: "", historie: "", 
-        materiale: "", skriving: "", teknologi: "", kunst: "", filosofi: "", berekraft: "", landbruk: "",
-        innovasjon: "", utdanning: "", spel: "", fotografi: "", marknadsføring: "", verktøy: "", skisser: "",
-        algoritmar: "", kreativitet: "", automatisering: "", tilgjenge: "", datastrukturar: ""
-      },
+      scope: getSafeScope(rawContent),
       parseFrontmatter: true,
     })
 

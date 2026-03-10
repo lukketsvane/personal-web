@@ -199,8 +199,8 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
             ))}
           </div>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-xs font-medium text-gray-500 lowercase">emneord</h2>
+        <div className="space-y-0.5">
+
           <div className="flex flex-wrap gap-1.5">
             {displayTags.map((tag) => (
               <FilterButton
@@ -223,7 +223,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowAllTags(!showAllTags)}
-                className="text-xs px-3 py-1 h-auto font-normal rounded-full text-blue-500 hover:text-blue-600"
+                className="text-xs px-3 py-1 h-auto font-normal text-blue-500 hover:text-blue-600"
               >
                 {showAllTags ? 'Vis færre' : `+${uniqueTags.length - 5} fleire`}
               </Button>

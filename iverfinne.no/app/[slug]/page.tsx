@@ -1,4 +1,4 @@
-import { getPublishedPosts, getPostBySlug } from '@/lib/notion'
+import { getPublishedPosts, getPostBySlug, getSafeScope } from '@/lib/notion'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
@@ -90,12 +90,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             mdxOptions: {
               remarkPlugins: [remarkGfm],
             },
-            scope: {
-              material: "", tid: "", geografi: "", geometri: "", design: "", kultur: "", norsk: "", historie: "", 
-              materiale: "", skriving: "", teknologi: "", kunst: "", filosofi: "", berekraft: "", landbruk: "",
-              innovasjon: "", utdanning: "", spel: "", fotografi: "", marknadsføring: "", verktøy: "", skisser: "",
-              algoritmar: "", kreativitet: "", automatisering: "", tilgjenge: "", datastrukturar: ""
-            }
+            scope: getSafeScope(post.content)
           }}
         />
       </div>

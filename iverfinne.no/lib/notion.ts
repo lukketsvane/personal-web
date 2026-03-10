@@ -147,6 +147,26 @@ function getPageProperties(page: any) {
   };
 }
 
+export function getSafeScope(content: string): Record<string, string> {
+  const scope: Record<string, string> = {
+    material: "",
+    tid: "",
+  };
+
+  // Finn alle potensielle variablar i krøllparentesar {ord}
+  // Me ser etter ord som startar med ein bokstav og inneheld vanlege teikn
+  const matches = content.match(/(?<!\\)\{([a-zA-ZæøåÆØÅ][a-zA-ZæøåÆØÅ0-9_]*)\}/g);
+  
+  if (matches) {
+    matches.forEach(match => {
+      const word = match.slice(1, -1);
+      scope[word] = "";
+    });
+  }
+
+  return scope;
+}
+
 export const getPublishedPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const databaseId = getDatabaseId();

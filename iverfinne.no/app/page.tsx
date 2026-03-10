@@ -1,5 +1,5 @@
 import MDXBlog from '@/components/mdx-blog'
-import { getPublishedPosts, getPostContent } from '@/lib/notion'
+import { getPublishedPosts, getPostContent, getSafeScope } from '@/lib/notion'
 import { serialize } from 'next-mdx-remote/serialize'
 import remarkGfm from 'remark-gfm'
 
@@ -16,12 +16,7 @@ export default async function Home() {
           remarkPlugins: [remarkGfm],
           format: 'mdx',
         },
-        scope: {
-          material: "", tid: "", geografi: "", geometri: "", design: "", kultur: "", norsk: "", historie: "", 
-          materiale: "", skriving: "", teknologi: "", kunst: "", filosofi: "", berekraft: "", landbruk: "",
-          innovasjon: "", utdanning: "", spel: "", fotografi: "", marknadsføring: "", verktøy: "", skisser: "",
-          algoritmar: "", kreativitet: "", automatisering: "", tilgjenge: "", datastrukturar: ""
-        }
+        scope: getSafeScope(content)
       })
       return { ...post, serialized }
     } catch (e) {

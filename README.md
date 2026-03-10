@@ -1,47 +1,35 @@
-Personal web space and knowledge management system.
+# iverfinne.no
 
-## Quick Links
+Personleg nettstad driven av Notion API.
 
-- [Projects](https://github.com/lukketsvane/personal-web/tree/main/iverfinne.no/content/projects)
-- [Writing](https://github.com/lukketsvane/personal-web/tree/main/iverfinne.no/content/writing)
+## Arkitektur
+- Rammeverk: Next.js 16 (App Router), React 19.
+- Innhald: Henta dynamisk frå Notion via `@notionhq/client`.
+- Rendering: MDX via `next-mdx-remote`.
+- Styling: Tailwind CSS.
+- Yting: Server-side caching med `unstable_cache` og førehandsserialisering for umiddelbar respons.
 
-## Tech Stack
+## Oppsett
+Krev `.env.local` med følgjande variablar:
+- `NOTION_API_KEY`
+- `NOTION_DATABASE_ID`
 
-- Next.js
-- MDX
-- TypeScript
-- Tailwind CSS
-
-## Development
-
-```bash
-git clone https://github.com/lukketsvane/personal-web.git
-cd personal-web
-npm install
-npm run dev
-```
-
-Visit `http://localhost:3000`
-
-## License
-
-MIT © Lukket Svane
-
-## 1. Create a Post
-1.  Open your **Notion Database**.
-2.  Click **"New"**.
-3.  Write your content (Text, Images, Code Blocks).
-4.  **Set Status to "Done"**. (Drafts stay hidden)
-
-## 2. Updates
-*   **Metadata (Title, Tags, Date):** Updates typically appear within 60 seconds (revalidation time).
-*   **Content (Body):** Fetched live when a user expands a post. Always fresh.
-
-## 3. Local Development
-Just run the app. It connects to Notion API directly.
+## Utvikling
 ```bash
 cd iverfinne.no
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
-Ensure `.env.local` has `NOTION_API_KEY` and `NOTION_DATABASE_ID`.
+## Publisering
+1. Opprett side i Notion-database.
+2. Sett feltet `Status` til `Ferdig`.
+3. Innhaldet blir oppdatert automatisk (60s revalidering).
+
+## Struktur
+- `app/`: Ruter, API-punkt og globale stilark.
+- `components/`: UI-komponentar og MDX-logikk.
+- `lib/`: Notion-integrasjon og hjelpefunksjonar.
+- `public/`: Statiske ressursar (bilete, favicon, modellar).
+- `scripts/`: Verktøy for migrering og debugging.
+- `types/`: TypeScript-definisjonar.
