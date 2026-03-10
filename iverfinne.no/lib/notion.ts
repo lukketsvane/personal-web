@@ -45,7 +45,6 @@ export function formatNorwegianDate(dateStr: string): { day: number, month: stri
   
   const monthIdx = dateObj.getMonth()
   const monthName = monthsFull[monthIdx]
-  // Bruk forkorting viss namnet er langt (meir enn 4 teikn)
   const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
   
   return { day, month, year }
@@ -56,7 +55,6 @@ function getDatabaseId() {
     if (!dbId) {
         throw new Error("Missing NOTION_DATABASE_ID");
     }
-    // Add dashes if missing
     if (!dbId.includes('-')) {
         dbId = dbId.replace(
             /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/,
@@ -66,7 +64,6 @@ function getDatabaseId() {
     return dbId;
 }
 
-// Helper to extract properties safely
 function getPageProperties(page: any) {
   const props = page.properties || {};
 
@@ -86,7 +83,6 @@ function getPageProperties(page: any) {
   };
 
   const getTitle = () => {
-    // Try "Namn" first, then any title property
     const namnProp = findProp("Namn");
     if (namnProp && namnProp.type === 'title' && namnProp.title?.[0]) {
       return namnProp.title[0].plain_text;
@@ -124,6 +120,16 @@ function getPageProperties(page: any) {
     return "";
   };
 
+  const getAnyImageUrl = () => {
+    for (const key in props) {
+      const prop = props[key];
+      if (prop.type === 'url' && prop.url && (prop.url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) || prop.url.includes('covers.openlibrary.org'))) {
+        return prop.url;
+      }
+    }
+    return null;
+  };
+
   const title = getTitle();
   let slug = getRichText(["Slug"]);
   if (!slug) {
@@ -139,10 +145,9 @@ function getPageProperties(page: any) {
   const tags = getMultiSelect(["Merkelappar", "Tags"]);
   const url = getUrl(["URL", "Link", "Lenkje"]);
   
-  // Spesifikk sjekk for bokomslag eller hovudbilete i eigenskapar
-  const coverFromProp = getUrl(["Omslag", "Cover", "Bilete"]);
+  // Prøv å finne eit bilete (omslag) på fleire måtar
+  let image = getUrl(["Omslag", "Cover", "Bilete", "Thumbnail"]) || getAnyImageUrl() || undefined;
   
-  let image: string | undefined = coverFromProp || undefined;
   if (!image && page.cover) {
     if (page.cover.type === "external") {
       image = page.cover.external.url;
@@ -162,7 +167,6 @@ function getPageProperties(page: any) {
     }
   }
 
-  // Construct a unique ID
   const uid = `${type}-${slug}`;
 
   return {
@@ -185,33 +189,26 @@ export function getSafeScope(content: string): Record<string, string> {
     material: "",
     tid: "",
   };
-
-  // Finn alle potensielle variablar i krøllparentesar {ord}
-  // Me ser etter ord som startar med ein bokstav og inneheld vanlege teikn
   const matches = content.match(/(?<!\\)\{([a-zA-ZæøåÆØÅ][a-zA-ZæøåÆØÅ0-9_]*)\}/g);
-  
   if (matches) {
     matches.forEach(match => {
       const word = match.slice(1, -1);
       scope[word] = "";
     });
   }
-
   return scope;
 }
 
 export const getPublishedPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const databaseId = getDatabaseId();
-    console.log(`Querying Notion database: ${databaseId}`);
-    
     try {
       const response = await notion.databases.query({
         database_id: databaseId,
         filter: {
           or: [
             { property: "Status", status: { equals: "Ferdig" } },
-            { property: "Status", status: { equals: "Done" } } // Fallback
+            { property: "Status", status: { equals: "Done" } }
           ]
         },
         sorts: [
@@ -222,14 +219,10 @@ export const getPublishedPosts = unstable_cache(
         ],
       });
 
-      console.log(`Notion returned ${response.results.length} results`);
-
       const posts = await Promise.all(response.results
         .map(async (page): Promise<Post | null> => {
           try {
             const props = getPageProperties(page);
-            
-            // For "Bilete" type, fetch blocks to get thumbnails
             let thumbnails = props.image ? [{ src: props.image, alt: props.title }] : [];
             if (props.type === "Bilete") {
               const blocks = await notion.blocks.children.list({ block_id: page.id });
@@ -239,11 +232,8 @@ export const getPublishedPosts = unstable_cache(
                   src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
                   alt: b.image.caption?.[0]?.plain_text || props.title
                 }));
-              if (images.length > 0) {
-                thumbnails = images;
-              }
+              if (images.length > 0) thumbnails = images;
             }
-
             return {
               ...props,
               content: "", 
@@ -291,10 +281,7 @@ export async function getPostIdBySlug(slug: string): Promise<string | null> {
             ]
         }
     });
-
-    if (response.results.length > 0) {
-        return response.results[0].id;
-    }
+    if (response.results.length > 0) return response.results[0].id;
     return null;
 }
 
@@ -314,14 +301,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       ]
     }
   });
-
   if (response.results.length === 0) return null;
-
   const page = response.results[0];
   const props = getPageProperties(page);
   const content = await getPostContent(page.id);
-  
-  // For "Bilete" type, fetch blocks to get thumbnails
   let thumbnails = props.image ? [{ src: props.image, alt: props.title }] : [];
   if (props.type === "Bilete") {
     const blocks = await notion.blocks.children.list({ block_id: page.id });
@@ -331,11 +314,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
         alt: b.image.caption?.[0]?.plain_text || props.title
       }));
-    if (images.length > 0) {
-      thumbnails = images;
-    }
+    if (images.length > 0) thumbnails = images;
   }
-
   return {
     ...props,
     content,

@@ -157,7 +157,7 @@ const TimelineConnector = () => (
   <div className="absolute left-0 sm:left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
 )
 
-const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }) => {
+const TimelineNode = ({ type, onToggle, url }: { type: string, onToggle: () => void, url?: string }) => {
   const typeColors = {
     Skriving: "bg-blue-500",
     Bok: "bg-green-500",
@@ -167,17 +167,23 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
     Bilete: "bg-teal-500"
   }
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (type === "Lenkje" && url) {
+      window.open(url, '_blank')
+    } else {
+      onToggle()
+    }
+  }
+  
   return (
     <button 
-      onClick={(e) => {
-        e.stopPropagation()
-        onToggle()
-      }}
+      onClick={handleClick}
       className={cn(
         "absolute left-0 sm:left-0 top-[1.125rem] w-3 h-3 sm:w-4 sm:h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10 transition-transform hover:scale-125 cursor-pointer",
         typeColors[type as keyof typeof typeColors] || "bg-gray-500"
       )} 
-      aria-label="Utvid eller skjul innhald"
+      aria-label={type === "Lenkje" ? "Opna lenkje" : "Utvid eller skjul innhald"}
     />
   )
 }
@@ -187,7 +193,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
   const renderTags = () => {
     return (
-      <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap mt-2">
         <Badge 
           className={cn(
             "text-xs px-2 py-0.5 rounded-full font-medium transition-colors border",
@@ -215,21 +221,23 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   const day = dateObj.getDate()
   
   const monthsFull = [
-    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
-    "Juli", "August", "September", "Oktober", "November", "Desember"
+    "januar", "februar", "mars", "april", "mai", "juni", 
+    "juli", "august", "september", "oktober", "november", "desember"
   ]
   const monthsShort = [
-    "Jan.", "Feb.", "Mars", "Apr.", "Mai", "Juni", 
-    "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Des."
+    "jan.", "feb.", "mars", "apr.", "mai", "juni", 
+    "juli", "aug.", "sep.", "okt.", "nov.", "des."
   ]
   
   const monthIdx = dateObj.getMonth()
-  const monthName = monthsFull[monthIdx].toLowerCase()
-  const month = monthName.length > 4 ? monthsShort[monthIdx].toLowerCase() : monthName
+  const monthName = monthsFull[monthIdx]
+  const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
 
   const handleCardClick = () => {
     if (post.type === "Bilete") {
       setSelectedGalleryImage(0)
+    } else if (post.type === "Lenkje" && post.url) {
+      window.open(post.url, '_blank')
     } else {
       onToggle()
     }
@@ -244,16 +252,17 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       </div>
       <div className="relative min-w-0">
         <div className="block">
-          <TimelineNode type={post.type} onToggle={handleCardClick} />
+          <TimelineNode type={post.type} onToggle={handleCardClick} url={post.url} />
           <TimelineConnector />
         </div>
         <div className="pb-8 pt-0">
           <motion.article 
             layoutId={`post-${post.uid}`}
             className={cn(
-              "relative rounded-lg p-4 cursor-pointer transition-all",
-              isExpanded ? "dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800",
-              post.type === "Lenkje" && "hover:cursor-alias",
+              "relative rounded-lg p-4 transition-all",
+              post.type === "Lenkje" 
+                ? "hover:bg-blue-50/30 dark:hover:bg-blue-900/10 cursor-alias" 
+                : (isExpanded ? "dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"),
               "ml-0"
             )}
             onClick={handleCardClick}
@@ -262,10 +271,24 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             whileTap={{ scale: 0.995 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
-            {/* Title Section - Hide for "Bilete" */}
+            {/* Main Content Section */}
             {post.type !== "Bilete" && (
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div className="flex-1">
+              <div className="flex items-start gap-4 mb-4">
+                {/* Book Cover - Left Aligned */}
+                {post.type === "Bok" && (post.image || post.icon) && (
+                  <div className="relative w-20 sm:w-24 aspect-[2/3] shrink-0 shadow-md rounded-sm overflow-hidden border border-gray-100 dark:border-gray-800">
+                    <NextImage
+                      src={post.image || post.icon || ""}
+                      alt={`Omslag for ${post.title}`}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="(max-width: 640px) 80px, 96px"
+                    />
+                  </div>
+                )}
+                
+                <div className="flex-1 group/title">
                   <div className="flex items-center gap-2">
                     {post.type === "Lenkje" && post.url ? (
                       <a 
@@ -274,13 +297,13 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         rel="noopener noreferrer" 
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                        <h2 className="text-2xl font-semibold tracking-tight mb-2 group-hover/title:text-blue-600 transition-colors">
                           {post.title}
                         </h2>
                       </a>
                     ) : (
                       <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
-                        <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                        <h2 className="text-2xl font-semibold tracking-tight mb-2 group-hover/title:text-blue-600 transition-colors">
                           {post.title}
                         </h2>
                       </Link>
@@ -299,19 +322,10 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                     <span className="font-extrabold">{day}.</span> {month}
                   </time>
                   <p className="text-muted-foreground text-sm font-serif">{post.description}</p>
+                  {renderTags()}
                 </div>
-                {post.type === "Bok" && (post.image || post.icon) && (
-                  <div className="relative w-20 sm:w-24 aspect-[2/3] shrink-0 ml-4 shadow-md rounded-sm overflow-hidden border border-gray-100 dark:border-gray-800">
-                    <NextImage
-                      src={post.image || post.icon || ""}
-                      alt={`Omslag for ${post.title}`}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                      sizes="(max-width: 640px) 80px, 96px"
-                    />
-                  </div>
-                )}
+
+                {/* Non-book icons - Right Aligned */}
                 {post.type !== "Bok" && post.type !== "Bilete" && post.icon && (
                   <div className="relative w-16 h-16 shrink-0 ml-4">
                     <NextImage
@@ -328,26 +342,18 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             )}
 
             {/* Image Grid for "Bilete" or Thumbnails for others */}
-            {post.type !== "Skriving" && post.thumbnails && post.thumbnails.length > 0 && (
+            {post.type !== "Skriving" && post.type !== "Bok" && post.thumbnails && post.thumbnails.length > 0 && (
               <div className={cn(
                 "grid gap-2 mb-4",
-                post.type === "Bilete" ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"
+                post.type === "Bilete" ? "grid-cols-3" : "grid-cols-3"
               )}>
-                {(post.type === "Bilete" ? post.thumbnails.slice(0, 8) : post.thumbnails.slice(0, 3)).map((img, i) => {
-                  const isLastVisible = post.type === "Bilete" && (
-                    (i === 3 && post.thumbnails!.length > 4) || // Last on mobile (2x2)
-                    (i === 7 && post.thumbnails!.length > 8)    // Last on desktop (4x2)
-                  );
-                  
-                  const isHiddenOnMobile = i >= 4;
+                {(post.type === "Bilete" ? post.thumbnails.slice(0, 9) : post.thumbnails.slice(0, 3)).map((img, i) => {
+                  const isLastVisible = post.type === "Bilete" && i === 8 && post.thumbnails!.length > 9;
 
                   return (
                     <div 
                       key={`${post.uid}-thumb-${i}`}
-                      className={cn(
-                        "aspect-square relative bg-gray-100 rounded-md overflow-hidden group/thumb",
-                        post.type === "Bilete" && isHiddenOnMobile && "hidden sm:block"
-                      )}
+                      className="aspect-square relative bg-gray-100 rounded-md overflow-hidden group/thumb"
                       onClick={(e) => {
                         if (post.type === "Bilete") {
                           e.stopPropagation()
@@ -372,10 +378,10 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         />
                       )}
                       
-                      {/* Plus overlay for the last visible image if there are more */}
+                      {/* Plus overlay for the 9th image if there are more */}
                       {isLastVisible && (
-                        <div className="absolute inset-0 bg-black/10 flex items-center justify-center pointer-events-none group-hover/thumb:bg-black/20 transition-colors">
-                          <Plus className="text-white w-8 h-8 opacity-20 group-hover/thumb:opacity-50 transition-opacity" />
+                        <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none group-hover/thumb:bg-black/20 transition-colors">
+                          <Plus className="text-white w-8 h-8 opacity-20 group-hover/thumb:opacity-60 transition-opacity" />
                         </div>
                       )}
                     </div>
@@ -384,15 +390,15 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               </div>
             )}
 
-            {/* Date for "Bilete" type since title is hidden */}
+            {/* Special layout for Bilete type since title is hidden */}
             {post.type === "Bilete" && (
-              <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
-                <span className="font-extrabold">{day}.</span> {month}
-              </time>
+              <>
+                <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
+                  <span className="font-extrabold">{day}.</span> {month}
+                </time>
+                {renderTags()}
+              </>
             )}
-
-            {/* Tags */}
-            {renderTags()}
 
             {/* Hidden Gallery Trigger for "Bilete" */}
             {post.type === "Bilete" && (
@@ -413,7 +419,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden mt-4"
+                  className="overflow-hidden mt-4 border-t border-gray-100 dark:border-gray-800 pt-6"
                 >
                   <div 
                     className="prose dark:prose-invert max-w-none text-base leading-relaxed overflow-hidden break-words"
@@ -421,18 +427,37 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   >
                     {post.type === "Interaktiv" ? (
                       <HtmlIframe content={post.content} />
-                    ) : serializedContent ? (
-                      <MDXRemote
-                        {...serializedContent}
-                        components={{
-                          ...mdxComponents,
-                          WebDesignKeys
-                        }}
-                      />
+                    ) : post.type === "Bilete" ? (
+                      <ImageGallery images={post.thumbnails || []} />
                     ) : (
-                      <div className="flex items-center justify-center p-4 text-muted-foreground italic">
-                        Lastar innhald...
-                      </div>
+                      <>
+                        {post.type === "Bok" && (post.image || post.icon) && (
+                          <div className="mb-8 flex justify-start">
+                            <div className="relative w-40 sm:w-48 aspect-[2/3] shadow-xl rounded-sm overflow-hidden border border-gray-100 dark:border-gray-800">
+                              <NextImage
+                                src={post.image || post.icon || ""}
+                                alt={`Omslag for ${post.title}`}
+                                fill
+                                unoptimized
+                                className="object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {serializedContent ? (
+                          <MDXRemote
+                            {...serializedContent}
+                            components={{
+                              ...mdxComponents,
+                              WebDesignKeys
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center p-4 text-muted-foreground italic">
+                            Lastar innhald...
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </motion.div>

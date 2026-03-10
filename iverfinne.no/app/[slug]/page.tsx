@@ -45,7 +45,6 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
       try {
         const slugLower = params.slug.toLowerCase()
         
-        // Sjekk om dette er ein "Type"-side (t.d. /skriving)
         if (VALID_TYPES.includes(slugLower)) {
           setIsTypePage(true)
           const res = await fetch('/api/posts')
@@ -55,7 +54,6 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
           return
         }
 
-        // Viss ikkje, hent enkeltinnlegg
         const data = await fetch(`/api/posts`).then(res => res.json())
         const found = data.find((p: any) => p.slug === params.slug)
         if (found) {
@@ -73,9 +71,7 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">.</div>
 
-  // Viss dette er ei rute for ein type (t.d. /skriving), vis hovudbloggen ferdig filtrert
   if (isTypePage) {
-    // Finn den nøyaktige typen frå lista (for å få rett kapitalisering)
     const displayType = params.slug.charAt(0).toUpperCase() + params.slug.slice(1)
     return (
       <div className="container w-screen px-4 py-8">
@@ -131,8 +127,8 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
       </Link>
 
       <header className="mb-12">
-        {post.type !== "Bilete" && (
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-8 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-8 mb-8">
+          {post.type !== "Bilete" && (
             <motion.h1 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -141,25 +137,25 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
             >
               {post.title}
             </motion.h1>
-            
-            {post.type === "Bok" && (post.image || post.icon) && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="relative w-32 sm:w-40 aspect-[2/3] shrink-0 shadow-xl rounded-md overflow-hidden border border-gray-100 dark:border-gray-800"
-              >
-                <NextImage
-                  src={post.image || post.icon || ""}
-                  alt={`Omslag for ${post.title}`}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                  priority
-                />
-              </motion.div>
-            )}
-          </div>
-        )}
+          )}
+          
+          {post.type === "Bok" && (post.image || post.icon) && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative w-32 sm:w-40 aspect-[2/3] shrink-0 shadow-xl rounded-md overflow-hidden border border-gray-100 dark:border-gray-800"
+            >
+              <NextImage
+                src={post.image || post.icon || ""}
+                alt={`Omslag for ${post.title}`}
+                fill
+                unoptimized
+                className="object-cover"
+                priority
+              />
+            </motion.div>
+          )}
+        </div>
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
           <div className="flex items-center gap-2 text-muted-foreground lowercase">
