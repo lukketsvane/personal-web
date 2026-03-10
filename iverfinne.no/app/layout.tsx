@@ -6,7 +6,7 @@ import { GeistMono } from 'geist/font/mono'
 const APP_NAME = 'iverfinne.no'
 const APP_DEFAULT_TITLE = 'iverfinne.no'
 const APP_TITLE_TEMPLATE = '%s - iverfinne.no'
-const APP_DESCRIPTION = 'Personal website and blog'
+const APP_DESCRIPTION = 'Personleg nettside og blogg'
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE,
   },
   description: APP_DESCRIPTION,
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -49,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="nn" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>{children}</body>
     </html>
   )

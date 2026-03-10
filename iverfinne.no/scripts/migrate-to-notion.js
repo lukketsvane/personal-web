@@ -19,13 +19,17 @@ const notion = new Client({ auth: NOTION_API_KEY });
 
 // Type mapping based on folder names or frontmatter
 const TYPE_MAPPING = {
-  "writing": "Writing",
-  "books": "Book",
-  "projects": "Project",
-  "outgoing_links": "Link",
+  "writing": "Skriving",
+  "books": "Bok",
+  "projects": "Prosjekt",
+  "outgoing_links": "Lenkje",
+  "Skriving": "Skriving",
+  "Bok": "Bok",
+  "Prosjekt": "Prosjekt",
+  "Lenkje": "Lenkje",
   // Map unexpected types
-  "public": "Project", 
-  "article": "Writing"
+  "public": "Prosjekt", 
+  "article": "Skriving"
 };
 
 function getFilesRecursively(dir) {

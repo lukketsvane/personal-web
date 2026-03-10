@@ -43,7 +43,7 @@ async function createSamplePost() {
         },
         "Type": {
           select: {
-            name: "Writing",
+            name: "Skriving",
           },
         },
         "Slug": {
@@ -113,7 +113,7 @@ async function createSamplePost() {
        console.log("- Status (Status) with option 'Done'");
        console.log("- Date (Date)");
        console.log("- Summary (Text)");
-       console.log("- Type (Select) with options: Writing, Book, Project, Link");
+       console.log("- Type (Select) with options: Skriving, Bok, Prosjekt, Lenkje");
        console.log("- Slug (Text)");
        console.log("- Tags (Multi-select)");
     }

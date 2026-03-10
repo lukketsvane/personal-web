@@ -9,11 +9,15 @@ const notion = new Client({
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
-const TYPE_MAPPING: Record<string, "writing" | "books" | "projects" | "outgoing_links"> = {
-  "Writing": "writing",
-  "Book": "books",
-  "Project": "projects",
-  "Link": "outgoing_links"
+const TYPE_MAPPING: Record<string, "Skriving" | "Bok" | "Prosjekt" | "Lenkje"> = {
+  "Skriving": "Skriving",
+  "Bok": "Bok",
+  "Prosjekt": "Prosjekt",
+  "Lenkje": "Lenkje",
+  "Writing": "Skriving",
+  "Book": "Bok",
+  "Project": "Prosjekt",
+  "Link": "Lenkje"
 };
 
 function getDatabaseId() {
@@ -82,8 +86,8 @@ function getPageProperties(page: any) {
   const date = getDate("Date") || page.created_time.split('T')[0];
   const description = getRichText("Summary") || getRichText("Description") || "";
   
-  let typeRaw = getSelect("Type") || "Writing";
-  const type = TYPE_MAPPING[typeRaw] || "writing";
+  let typeRaw = getSelect("Type") || "Skriving";
+  const type = TYPE_MAPPING[typeRaw] || "Skriving";
 
   const tags = getMultiSelect("Tags");
   const url = getUrl("URL") || getUrl("Link") || "";
@@ -194,4 +198,29 @@ export async function getPostIdBySlug(slug: string): Promise<string | null> {
         return response.results[0].id;
     }
     return null;
+}
+
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const databaseId = getDatabaseId();
+  const response = await notion.databases.query({
+    database_id: databaseId,
+    filter: {
+      and: [
+        { property: "Status", status: { equals: "Done" } },
+        { property: "Slug", rich_text: { equals: slug } }
+      ]
+    }
+  });
+
+  if (response.results.length === 0) return null;
+
+  const page = response.results[0];
+  const props = getPageProperties(page);
+  const content = await getPostContent(page.id);
+
+  return {
+    ...props,
+    content,
+    thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
+  };
 }

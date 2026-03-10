@@ -13,7 +13,7 @@ interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "writing" | "books" | "projects" | "outgoing_links"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
   image?: string
   content: string
   serialized?: MDXRemoteSerializeResult
@@ -38,7 +38,7 @@ export default function MDXBlogWrapper() {
         setPosts(data)
       } catch (error: any) {
         console.error('Error fetching posts:', error)
-        setError(error.message || 'Failed to fetch posts. Please try again later.')
+        setError(error.message || 'Feil ved henting av innlegg. Prøv igjen seinare.')
       } finally {
         setIsLoading(false)
       }
@@ -54,13 +54,13 @@ export default function MDXBlogWrapper() {
   if (error) {
     return (
       <div className="p-4 border border-red-200 bg-red-50 text-red-700 rounded-md">
-        <p className="font-medium">Error loading posts</p>
+        <p className="font-medium">Feil ved lasting av innlegg</p>
         <p className="text-sm">{error}</p>
         <button 
           onClick={() => window.location.reload()}
           className="mt-2 text-sm underline hover:no-underline"
         >
-          Try again
+          Prøv igjen
         </button>
       </div>
     )
@@ -69,7 +69,7 @@ export default function MDXBlogWrapper() {
   return posts.length > 0 ? (
     <MDXBlog initialPosts={posts} />
   ) : (
-    <p>No posts found.</p>
+    <p>Fann ingen innlegg.</p>
   )
 }
 

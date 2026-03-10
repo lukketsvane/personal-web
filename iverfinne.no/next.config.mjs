@@ -1,15 +1,3 @@
-import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import rehypePrismPlus from 'rehype-prism-plus'
-
-const withMDX = createMDX({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypePrismPlus],
-  },
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -60,11 +48,14 @@ const nextConfig = {
     return config
   },
 
+  // Enable Turbopack acknowledgment
+  turbopack: {},
+
   // Enable experimental features for better MDX support
   experimental: {
     // mdxRs: true
   }
 }
 
-export default withMDX(nextConfig)
+export default nextConfig
 

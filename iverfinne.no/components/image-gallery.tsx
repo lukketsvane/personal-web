@@ -79,7 +79,7 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
           {selectedImage !== null && (
             <>
               <DialogTitle className="sr-only">
-                {images[selectedImage].alt || `Image ${selectedImage + 1} of ${images.length}`}
+                {images[selectedImage].alt || `Bilete ${selectedImage + 1} av ${images.length}`}
               </DialogTitle>
               
               <div className="relative group">
@@ -89,7 +89,7 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
                     setSelectedImage(null)
                   }}
                   className="absolute top-4 right-4 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors"
-                  aria-label="Close fullscreen view"
+                  aria-label="Lukk fullskjermsvising"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -97,7 +97,7 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
                 <button
                   onClick={handlePrevious}
                   className="absolute left-4 top-1/2 -translate-y-1/2 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Previous image"
+                  aria-label="Førre bilete"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -105,7 +105,7 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
                 <button
                   onClick={handleNext}
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-50 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Next image"
+                  aria-label="Neste bilete"
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>

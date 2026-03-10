@@ -1,22 +1,59 @@
-# 🚀 Headless iverfinne.no (Notion Powered)
+`# iverfinne.no — Notion-databasestruktur`
 
-Your website streams content directly from Notion. No file syncing required.
+`Kvar rad i databasen er éin post på nettsida. Synkroniseringa hentar alle sider der Status = "Done".`
 
-## 1. Create a Post
-1.  Open your **Notion Database**.
-2.  Click **"New"**.
-3.  Write your content (Text, Images, Code Blocks).
-4.  **Set Status to "Done"**. (Drafts stay hidden)
+`## Properties (kolonnar)`
 
-## 2. Updates
-*   **Metadata (Title, Tags, Date):** Updates typically appear within 60 seconds (revalidation time).
-*   **Content (Body):** Fetched live when a user expands a post. Always fresh.
+`| Property | Type | Påkravd | Verdiar / Format |`
 
-## 3. Local Development
-Just run the app. It connects to Notion API directly.
-```bash
-cd iverfinne.no
-npm run dev
-```
+`|----------|------|---------|------------------|`
 
-Ensure `.env.local` has `NOTION_API_KEY` and `NOTION_DATABASE_ID`.
+`| Name | Title | Ja | Tittelen på posten |`
+
+`| Status | Status | Ja | To Do · In Progress · Done (berre "Done" vert publisert) |`
+
+`| Type | Select | Ja | Skriving · Bok · Prosjekt · Lenkje |`
+
+`| Date | Date | Ja | YYYY-MM-DD |`
+
+`| Tags | Multi-select | Valfritt | t.d. design, filosofi, ai, kunst, skriving, … |`
+
+`| Slug | Text | Valfritt | URL-slug, t.d. art-v-form-follows-fitness. Autogenerert frå tittel om tom. |`
+
+`| Summary | Text | Valfritt | Kort beskriving for førehandsvising / kortvisning |`
+
+`## Eksempel (tom rad, JSON)`
+
+`{`
+
+  `"Name": "",`
+
+  `"Status": "To Do",`
+
+  `"Type": null,`
+
+  `"date:Date:start": null,`
+
+  `"date:Date:end": null,`
+
+  `"date:Date:is_datetime": 0,`
+
+  `"Tags": [],`
+
+  `"Slug": "",`
+
+  `"Summary": ""`
+
+`}`
+
+`## Sideinnhald (body)`
+
+`Kvar side har ein Notion-body med vanleg innhald: overskrifter, avsnitt, bilete (som URL), tabellar, skiljelinjer osv. Synkroniseringa konverterer dette til MDX-filer i content/-mappa i repoet.`
+
+`## Synkronisering`
+
+`- Automatisk kvar time via GitHub Actions (Sync Notion Content)`
+
+`- Manuelt: GitHub Actions → "Run workflow"`
+
+`- Berre sider med Status = Done vert synkroniserte`

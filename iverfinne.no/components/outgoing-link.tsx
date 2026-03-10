@@ -33,16 +33,16 @@ export default function OutgoingLinksGrid({ links }: OutgoingLinksGridProps) {
         <Card key={link.url} className="flex flex-col">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
-              <Link 
+                <a 
                 href={link.url} 
                 target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:underline flex items-center gap-2 text-primary"
-                aria-label={`${link.title} (opens in a new tab)`}
-              >
+                rel="noopener noreferrer"
+                className="hover:underline flex items-center gap-2"
+                aria-label={`${link.title} (opnar i ei ny fane)`}
+                >
                 {link.title}
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </Link>
+                <ExternalLink className="h-4 w-4" />
+                </a>
             </CardTitle>
             <CardDescription>{link.description}</CardDescription>
           </CardHeader>

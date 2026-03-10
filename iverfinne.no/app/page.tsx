@@ -1,9 +1,12 @@
-import MDXBlogWrapper from '@/components/mdx-blog-wrapper'
+import MDXBlog from '@/components/mdx-blog'
+import { getPublishedPosts } from '@/lib/notion'
 
-export default function Home() {
+export default async function Home() {
+  const posts = await getPublishedPosts()
+  
   return (
     <div className="container w-screen px-4 py-8">
-      <MDXBlogWrapper />
+      <MDXBlog initialPosts={posts} />
     </div>
   )
 }

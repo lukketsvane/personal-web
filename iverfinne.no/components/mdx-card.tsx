@@ -45,6 +45,7 @@ import {
   Home
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
@@ -128,6 +129,7 @@ const mdxComponents = {
       <iframe {...props} className="absolute inset-0 w-full h-full border-0" />
     </div>
   ),
+  material: (props: any) => <div {...props} />,
   ResponsiveIframe: ResponsiveIframe,
 }
 
@@ -138,7 +140,7 @@ interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "writing" | "books" | "projects" | "outgoing_links"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
   image?: string
   coverimage?: string
   content: string
@@ -158,19 +160,22 @@ const TimelineConnector = () => (
   <div className="absolute left-0 sm:left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
 )
 
-const TimelineNode = ({ type }: { type: string }) => {
+const TimelineNode = ({ type, slug }: { type: string, slug: string }) => {
   const typeColors = {
-    writing: "bg-blue-500",
-    books: "bg-green-500",
-    projects: "bg-purple-500",
-    outgoing_links: "bg-orange-500"
+    Skriving: "bg-blue-500",
+    Bok: "bg-green-500",
+    Prosjekt: "bg-purple-500",
+    Lenkje: "bg-orange-500"
   }
   
   return (
-    <div className={cn(
-      "absolute left-0 sm:left-0 top-[1.125rem] w-3 h-3 sm:w-4 sm:h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10",
-      typeColors[type as keyof typeof typeColors] || "bg-gray-500"
-    )} />
+    <Link 
+      href={`/${slug}`}
+      className={cn(
+        "absolute left-0 sm:left-0 top-[1.125rem] w-3 h-3 sm:w-4 sm:h-4 rounded-full -translate-x-1/2 border-2 border-white dark:border-gray-900 z-10 transition-transform hover:scale-125",
+        typeColors[type as keyof typeof typeColors] || "bg-gray-500"
+      )} 
+    />
   )
 }
 
@@ -208,7 +213,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   }, [post.tags])
 
   const handleClick = () => {
-    if (post.type === "outgoing_links" && post.url) {
+    if (post.type === "Lenkje" && post.url) {
       window.open(post.url, '_blank')
     } else {
       onToggle()
@@ -264,7 +269,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
         <time className="text-lg font-semibold text-muted-foreground">
-          {new Date(post.date).toLocaleDateString('en-US', { 
+          {new Date(post.date).toLocaleDateString('nn-NO', { 
             month: '2-digit', 
             day: '2-digit' 
           })}
@@ -272,7 +277,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
       </div>
       <div className="relative min-w-0">
         <div className="block">
-          <TimelineNode type={post.type} />
+          <TimelineNode type={post.type} slug={post.slug} />
           <TimelineConnector />
         </div>
         <div className="pb-8 pt-0">
@@ -280,7 +285,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             className={cn(
               "relative rounded-lg p-4 cursor-pointer transition-all",
               isExpanded ? "bg-blue-50 dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800",
-              post.type === "outgoing_links" && "hover:cursor-alias",
+              post.type === "Lenkje" && "hover:cursor-alias",
               "ml-0"
             )}
             onClick={handleClick}
@@ -297,21 +302,21 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                     <button 
                       onClick={handleUrlClick}
                       className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                      aria-label="Open link in new tab"
+                      aria-label="Opna lenkje i ny fane"
                     >
                       <Link2 className="w-5 h-5" />
                     </button>
                   )}
                 </div>
                 <time className="block sm:hidden text-sm text-muted-foreground mb-2">
-                  {new Date(post.date).toLocaleDateString('en-US', { 
+                  {new Date(post.date).toLocaleDateString('nn-NO', { 
                     month: '2-digit', 
                     day: '2-digit' 
                   })}
                 </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
               </div>
-              {post.type === "books" && post.icon && (
+              {post.type === "Bok" && post.icon && (
                 <div className="relative w-16 h-16 shrink-0">
                   <NextImage
                     src={post.icon}

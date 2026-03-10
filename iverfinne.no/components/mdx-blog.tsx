@@ -17,7 +17,7 @@ interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "writing" | "books" | "projects" | "outgoing_links"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
   image?: string
   coverimage?: string
   content: string
@@ -28,10 +28,10 @@ interface Post {
 }
 
 const contentTypes = [
-  { label: "Writing", value: "writing", color: "bg-blue-500 text-white" },
-  { label: "Books", value: "books", color: "bg-green-500 text-white" },
-  { label: "Projects", value: "projects", color: "bg-purple-500 text-white" },
-  { label: "Outgoing Links", value: "outgoing_links", color: "bg-orange-500 text-white" },
+  { label: "Skriving", value: "Skriving", color: "bg-blue-500 text-white" },
+  { label: "Bok", value: "Bok", color: "bg-green-500 text-white" },
+  { label: "Prosjekt", value: "Prosjekt", color: "bg-purple-500 text-white" },
+  { label: "Lenkje", value: "Lenkje", color: "bg-orange-500 text-white" },
 ]
 
 interface FilterButtonProps {
@@ -163,7 +163,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
 
     } catch (err) {
       console.error('Error toggling post:', err)
-      setError('Failed to expand post')
+      setError('Feila ved utviding av innlegg')
     }
   }
 
@@ -200,7 +200,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
           </div>
         </div>
         <div className="space-y-2">
-          <h2 className="text-xs font-medium text-gray-500 lowercase">tags</h2>
+          <h2 className="text-xs font-medium text-gray-500 lowercase">emneord</h2>
           <div className="flex flex-wrap gap-1.5">
             {displayTags.map((tag) => (
               <FilterButton
@@ -225,7 +225,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                 onClick={() => setShowAllTags(!showAllTags)}
                 className="text-xs px-3 py-1 h-auto font-normal rounded-full text-blue-500 hover:text-blue-600"
               >
-                {showAllTags ? 'Show less' : `+${uniqueTags.length - 5} more`}
+                {showAllTags ? 'Vis færre' : `+${uniqueTags.length - 5} fleire`}
               </Button>
             )}
           </div>
@@ -235,7 +235,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <Input
-            placeholder="Type here to search"
+            placeholder="Søk her"
             className="pl-10 py-2 text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -258,7 +258,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
             ))
           ) : (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {error ? 'Error loading posts' : 'No posts found matching your criteria.'}
+              {error ? 'Feil ved lasting av innlegg' : 'Fann ingen innlegg som passar søket.'}
             </p>
           )}
         </motion.div>

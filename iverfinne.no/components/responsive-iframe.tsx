@@ -64,7 +64,7 @@ export function ResponsiveIframe({ src, title, aspectRatio = '1/2' }: Responsive
         <Button
           className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 z-10"
           onClick={toggleFullscreen}
-          aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          aria-label={isFullscreen ? "Avslutt fullskjerm" : "Gå til fullskjerm"}
         >
           {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         </Button>
