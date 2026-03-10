@@ -115,7 +115,6 @@ const mdxComponents = {
   Star: Star,
   Home: Home,
   Image: (props: any) => {
-    // If it's used as <Image /> in MDX, it might not have width/height
     if (!props.width && !props.height && !props.fill) {
       return <img {...props} className="max-w-full h-auto rounded-lg mb-4" />
     }
@@ -138,7 +137,7 @@ interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv" | "Bilete"
   image?: string
   coverimage?: string
   content: string
@@ -163,7 +162,9 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
     Skriving: "bg-blue-500",
     Bok: "bg-green-500",
     Prosjekt: "bg-purple-500",
-    Lenkje: "bg-orange-500"
+    Lenkje: "bg-orange-500",
+    Interaktiv: "bg-pink-500",
+    Bilete: "bg-teal-500"
   }
   
   return (
@@ -182,40 +183,12 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
 }
 
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
-  const [showAllTags, setShowAllTags] = useState(false)
-
-  const handleClick = () => {
-    if (post.type === "Lenkje" && post.url) {
-      window.open(post.url, '_blank')
-    } else {
-      // For andre typar gjer me no ingenting ved klikk på heile kortet,
-      // eller me kan la det framleis toggle viss ønskeleg.
-      // Men brukaren ba spesifikt om at tittelen skal opne eigen route.
-      onToggle()
-    }
-  }
-
-  const handleUrlClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (post.url) {
-      window.open(post.url, '_blank')
-    }
-  }
-
-  const handleShowAllTags = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowAllTags(true)
-  }
-
   const renderTags = () => {
     if (!Array.isArray(post.tags)) return null
 
-    const tagsToShow = showAllTags ? post.tags : post.tags.slice(0, 5)
-    const remainingTags = post.tags.length - tagsToShow.length
-
     return (
       <div className="flex gap-1.5 flex-wrap">
-        {tagsToShow.map((tag) => (
+        {post.tags.map((tag) => (
           <Badge 
             key={`${post.uid}-tag-${tag}`}
             variant="secondary"
@@ -227,26 +200,25 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             {tag}
           </Badge>
         ))}
-        {!showAllTags && remainingTags > 0 && (
-          <Badge 
-            variant="secondary"
-            className="text-xs px-2 py-0.5 rounded-sm font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
-            onClick={handleShowAllTags}
-          >
-            ...
-          </Badge>
-        )}
       </div>
     )
   }
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const months = [
+  
+  const monthsFull = [
     "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Desember"
   ]
-  const month = months[dateObj.getMonth()]
+  const monthsShort = [
+    "Jan.", "Feb.", "Mars", "Apr.", "Mai", "Juni", 
+    "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Des."
+  ]
+  
+  const monthIdx = dateObj.getMonth()
+  const monthName = monthsFull[monthIdx]
+  const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
 
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
@@ -268,54 +240,59 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               post.type === "Lenkje" && "hover:cursor-alias",
               "ml-0"
             )}
-            onClick={handleClick}
+            onClick={onToggle}
             initial={false}
             animate={{ backgroundColor: isExpanded ? "rgba(0,0,0,0.02)" : "transparent" }}
             whileTap={{ scale: 0.995 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
-            {/* Title Section */}
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
-                    <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
-                      {post.title}
-                    </h2>
-                  </Link>
-                  {post.url && (
-                    <button 
-                      onClick={handleUrlClick}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                      aria-label="Opna lenkje i ny fane"
-                    >
-                      <Link2 className="w-5 h-5" />
-                    </button>
-                  )}
+            {/* Title Section - Hide for "Bilete" unless expanded or requested */}
+            {post.type !== "Bilete" && (
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
+                      <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </h2>
+                    </Link>
+                    {post.url && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); window.open(post.url, '_blank') }}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                        aria-label="Opna lenkje i ny fane"
+                      >
+                        <Link2 className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                  <time className="block sm:hidden text-sm text-muted-foreground mb-2">
+                    <span className="font-extrabold">{day}.</span> {month}
+                  </time>
+                  <p className="text-muted-foreground text-sm">{post.description}</p>
                 </div>
-                <time className="block sm:hidden text-sm text-muted-foreground mb-2">
-                  <span className="font-extrabold">{day}.</span> {month}
-                </time>
-                <p className="text-muted-foreground text-sm">{post.description}</p>
+                {post.type === "Bok" && post.icon && (
+                  <div className="relative w-16 h-16 shrink-0">
+                    <NextImage
+                      src={post.icon}
+                      alt=""
+                      fill
+                      unoptimized
+                      className="object-cover rounded-sm"
+                      sizes="64px"
+                    />
+                  </div>
+                )}
               </div>
-              {post.type === "Bok" && post.icon && (
-                <div className="relative w-16 h-16 shrink-0">
-                  <NextImage
-                    src={post.icon}
-                    alt=""
-                    fill
-                    unoptimized
-                    className="object-cover rounded-sm"
-                    sizes="64px"
-                  />
-                </div>
-              )}
-            </div>
+            )}
 
-            {/* Thumbnails */}
-            {!isExpanded && post.thumbnails && post.thumbnails.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {post.thumbnails.slice(0, 3).map((img, i) => (
+            {/* Image Grid for "Bilete" or Thumbnails for others */}
+            {post.thumbnails && post.thumbnails.length > 0 && (
+              <div className={cn(
+                "grid gap-2 mb-4",
+                post.type === "Bilete" ? "grid-cols-3" : "grid-cols-3"
+              )}>
+                {(post.type === "Bilete" ? post.thumbnails : post.thumbnails.slice(0, 3)).map((img, i) => (
                   <div 
                     key={`${post.uid}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
@@ -383,4 +360,3 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     </div>
   )
 }
-

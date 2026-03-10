@@ -10,25 +10,50 @@ const notion = new Client({
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
-const TYPE_MAPPING: Record<string, "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv"> = {
+const TYPE_MAPPING: Record<string, "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv" | "Bilete"> = {
   "Skriving": "Skriving",
   "Bok": "Bok",
   "Prosjekt": "Prosjekt",
   "Lenkje": "Lenkje",
   "Interaktiv": "Interaktiv",
+  "Bilete": "Bilete",
   "Writing": "Skriving",
   "Book": "Bok",
   "Project": "Prosjekt",
   "Link": "Lenkje",
-  "Interactive": "Interaktiv"
+  "Interactive": "Interaktiv",
+  "Images": "Bilete",
+  "Bilder": "Bilete"
 };
+
+export function formatNorwegianDate(dateStr: string): { day: number, month: string, year: number } {
+  const dateObj = new Date(dateStr)
+  const day = dateObj.getDate()
+  const year = dateObj.getFullYear()
+  
+  const monthsFull = [
+    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
+    "Juli", "August", "September", "Oktober", "November", "Desember"
+  ]
+  
+  const monthsShort = [
+    "Jan.", "Feb.", "Mars", "Apr.", "Mai", "Juni", 
+    "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Des."
+  ]
+  
+  const monthIdx = dateObj.getMonth()
+  const monthName = monthsFull[monthIdx]
+  // Bruk forkorting viss namnet er langt (meir enn 4 teikn)
+  const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
+  
+  return { day, month, year }
+}
 
 function getDatabaseId() {
     let dbId = process.env.NOTION_DATABASE_ID;
     if (!dbId) {
         throw new Error("Missing NOTION_DATABASE_ID");
     }
-    // Add dashes if missing
     if (!dbId.includes('-')) {
         dbId = dbId.replace(
             /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/,
@@ -38,7 +63,6 @@ function getDatabaseId() {
     return dbId;
 }
 
-// Helper to extract properties safely
 function getPageProperties(page: any) {
   const props = page.properties || {};
 
@@ -58,7 +82,6 @@ function getPageProperties(page: any) {
   };
 
   const getTitle = () => {
-    // Try "Namn" first, then any title property
     const namnProp = findProp("Namn");
     if (namnProp && namnProp.type === 'title' && namnProp.title?.[0]) {
       return namnProp.title[0].plain_text;
@@ -131,7 +154,6 @@ function getPageProperties(page: any) {
     }
   }
 
-  // Construct a unique ID
   const uid = `${type}-${slug}`;
 
   return {
@@ -154,33 +176,26 @@ export function getSafeScope(content: string): Record<string, string> {
     material: "",
     tid: "",
   };
-
-  // Finn alle potensielle variablar i krøllparentesar {ord}
-  // Me ser etter ord som startar med ein bokstav og inneheld vanlege teikn
   const matches = content.match(/(?<!\\)\{([a-zA-ZæøåÆØÅ][a-zA-ZæøåÆØÅ0-9_]*)\}/g);
-  
   if (matches) {
     matches.forEach(match => {
       const word = match.slice(1, -1);
       scope[word] = "";
     });
   }
-
   return scope;
 }
 
 export const getPublishedPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const databaseId = getDatabaseId();
-    console.log(`Querying Notion database: ${databaseId}`);
-    
     try {
       const response = await notion.databases.query({
         database_id: databaseId,
         filter: {
           or: [
             { property: "Status", status: { equals: "Ferdig" } },
-            { property: "Status", status: { equals: "Done" } } // Fallback
+            { property: "Status", status: { equals: "Done" } }
           ]
         },
         sorts: [
@@ -191,25 +206,37 @@ export const getPublishedPosts = unstable_cache(
         ],
       });
 
-      console.log(`Notion returned ${response.results.length} results`);
-
-      const posts = response.results
-        .map((page): Post | null => {
+      const posts = await Promise.all(response.results
+        .map(async (page): Promise<Post | null> => {
           try {
             const props = getPageProperties(page);
+            
+            // For "Bilete" type, fetch blocks to get thumbnails
+            let thumbnails = props.image ? [{ src: props.image, alt: props.title }] : [];
+            if (props.type === "Bilete") {
+              const blocks = await notion.blocks.children.list({ block_id: page.id });
+              const images = blocks.results
+                .filter((b: any) => b.type === 'image')
+                .map((b: any) => ({
+                  src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
+                  alt: b.image.caption?.[0]?.plain_text || props.title
+                }))
+                .slice(0, 9);
+              if (images.length > 0) thumbnails = images;
+            }
+
             return {
               ...props,
               content: "", 
-              thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
+              thumbnails,
             };
           } catch (e) {
             console.error(`Error processing Notion page ${page.id}:`, e);
             return null;
           }
-        })
-        .filter((post): post is Post => post !== null);
+        }));
 
-      return posts;
+      return posts.filter((post): post is Post => post !== null);
     } catch (error: any) {
       console.error("Notion API error:", error);
       throw error;
@@ -245,10 +272,7 @@ export async function getPostIdBySlug(slug: string): Promise<string | null> {
             ]
         }
     });
-
-    if (response.results.length > 0) {
-        return response.results[0].id;
-    }
+    if (response.results.length > 0) return response.results[0].id;
     return null;
 }
 
@@ -268,16 +292,27 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       ]
     }
   });
-
   if (response.results.length === 0) return null;
-
   const page = response.results[0];
   const props = getPageProperties(page);
   const content = await getPostContent(page.id);
+  
+  let thumbnails = props.image ? [{ src: props.image, alt: props.title }] : [];
+  if (props.type === "Bilete") {
+    const blocks = await notion.blocks.children.list({ block_id: page.id });
+    const images = blocks.results
+      .filter((b: any) => b.type === 'image')
+      .map((b: any) => ({
+        src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
+        alt: b.image.caption?.[0]?.plain_text || props.title
+      }))
+      .slice(0, 9);
+    if (images.length > 0) thumbnails = images;
+  }
 
   return {
     ...props,
     content,
-    thumbnails: props.image ? [{ src: props.image, alt: props.title }] : [],
+    thumbnails,
   };
 }

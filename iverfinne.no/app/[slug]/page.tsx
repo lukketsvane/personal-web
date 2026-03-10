@@ -3,15 +3,16 @@ import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Calendar, Tag } from 'lucide-react'
+import { ArrowLeft, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
 import WebDesignKeys from '@/components/WebDesignKeys'
-import { HtmlIframe } from "@/components/html-iframe"
 import { getTagColor } from "@/lib/tag-utils"
 import { cn } from "@/lib/utils"
+import { HtmlIframe } from "@/components/html-iframe"
+import NextImage from "next/image"
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
@@ -47,11 +48,16 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const months = [
+  const monthsFull = [
     "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Desember"
   ]
-  const month = months[dateObj.getMonth()]
+  const monthsShort = [
+    "Jan.", "Feb.", "Mars", "Apr.", "Mai", "Juni", 
+    "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Des."
+  ]
+  const monthName = monthsFull[dateObj.getMonth()]
+  const month = monthName.length > 4 ? monthsShort[dateObj.getMonth()] : monthName
   const year = dateObj.getFullYear()
 
   return (
@@ -65,7 +71,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </Link>
 
       <header className="mb-12">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">{post.title}</h1>
+        {post.type !== "Bilete" && (
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">{post.title}</h1>
+        )}
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -99,6 +107,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           )}
         </div>
       </header>
+
+      {post.type === "Bilete" && post.thumbnails && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+          {post.thumbnails.map((img, i) => (
+            <div key={i} className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
+              <NextImage
+                src={img.src}
+                alt={img.alt}
+                fill
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="prose dark:prose-invert max-w-none">
         <MDXRemote 

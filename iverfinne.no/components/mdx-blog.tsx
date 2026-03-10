@@ -18,7 +18,7 @@ interface Post {
   date: string
   tags: string[] | string | undefined
   slug: string
-  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje"
+  type: "Skriving" | "Bok" | "Prosjekt" | "Lenkje" | "Interaktiv" | "Bilete"
   image?: string
   coverimage?: string
   content: string
@@ -33,6 +33,8 @@ const contentTypes = [
   { label: "Bok", value: "Bok" },
   { label: "Prosjekt", value: "Prosjekt" },
   { label: "Lenkje", value: "Lenkje" },
+  { label: "Interaktiv", value: "Interaktiv" },
+  { label: "Bilete", value: "Bilete" },
 ]
 
 interface FilterButtonProps {
@@ -49,18 +51,18 @@ const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterB
   const baseStyles = "text-xs px-3 py-1 h-auto font-normal transition-colors"
   const variantStyles = {
     type: cn(
-      "hover:bg-opacity-20 dark:hover:bg-opacity-20",
+      "hover:bg-opacity-20 dark:hover:bg-opacity-20 rounded-full",
       isActive 
         ? color 
         : cn(bgColorClass, "bg-opacity-10 text-gray-600 dark:text-gray-400")
     ),
     tag: cn(
-      "hover:bg-opacity-20 dark:hover:bg-opacity-20",
+      "hover:bg-opacity-20 dark:hover:bg-opacity-20 rounded-sm",
       isActive 
         ? color 
         : cn(bgColorClass, "bg-opacity-10 text-gray-600 dark:text-gray-400")
     ),
-    default: "bg-gray-100/50 hover:bg-gray-200/50 text-gray-600"
+    default: "bg-gray-100/50 hover:bg-gray-200/50 text-gray-600 rounded-full"
   }
 
   return (
@@ -70,8 +72,7 @@ const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterB
       onClick={onClick}
       className={cn(
         baseStyles,
-        variantStyles[variant],
-        "rounded-sm"
+        variantStyles[variant]
       )}
     >
       {label}
@@ -90,7 +91,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
-  const [showAllTags, setShowAllTags] = useState(false)
 
   const uniqueTags = useMemo(() => {
     const tagSet = new Set<string>()
@@ -101,10 +101,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     })
     return Array.from(tagSet).sort()
   }, [posts])
-
-  const displayTags = useMemo(() => {
-    return showAllTags ? uniqueTags : uniqueTags.slice(0, 5)
-  }, [uniqueTags, showAllTags])
 
   useEffect(() => {
     setPosts(initialPosts)
@@ -143,7 +139,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
       if (postIndex === -1) return
 
       const post = posts[postIndex]
-      // Content is now pre-serialized on server, but we keep fallback for robustness
       if (!post.serialized && post.id) {
           try {
             const res = await fetch(`/api/posts/${post.id}`)
@@ -200,7 +195,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         </div>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-1.5">
-            {displayTags.map((tag) => (
+            {uniqueTags.map((tag) => (
               <FilterButton
                 key={tag}
                 label={tag}
@@ -215,16 +210,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                 variant="tag"
               />
             ))}
-            {uniqueTags.length > 5 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAllTags(!showAllTags)}
-                className="text-xs px-3 py-1 h-auto font-normal text-blue-500 hover:text-blue-600"
-              >
-                {showAllTags ? 'Vis færre' : `+${uniqueTags.length - 5} fleire`}
-              </Button>
-            )}
           </div>
         </div>
       </aside>

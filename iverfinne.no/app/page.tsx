@@ -21,7 +21,7 @@ export default async function Home() {
         },
         scope: getSafeScope(content)
       })
-      return { ...post, serialized }
+      return { ...post, content, serialized }
     } catch (e) {
       console.error(`Error pre-serializing post ${post.id}:`, e)
       return post // Return original post without serialization if it fails
