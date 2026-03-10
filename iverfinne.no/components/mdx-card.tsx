@@ -187,9 +187,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     return (
       <div className="flex gap-1.5 flex-wrap">
         <Badge 
-          variant="outline"
           className={cn(
-            "text-xs px-2 py-0.5 rounded-full font-medium transition-colors",
+            "text-xs px-2 py-0.5 rounded-full font-medium transition-colors border",
             getTagColor(post.type)
           )}
         >
@@ -198,9 +197,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
         {Array.isArray(post.tags) && post.tags.map((tag) => (
           <Badge 
             key={`${post.uid}-tag-${tag}`}
-            variant="outline"
             className={cn(
-              "text-xs px-2 py-0.5 rounded-sm font-medium transition-colors",
+              "text-xs px-2 py-0.5 rounded-sm font-medium transition-colors border",
               getTagColor(tag)
             )}
           >
