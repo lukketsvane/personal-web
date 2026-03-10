@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils"
 import { HtmlIframe } from "@/components/html-iframe"
 import NextImage from "next/image"
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
@@ -31,19 +31,25 @@ const components = {
   material: (props: any) => <div {...props} />,
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
+export default function PostPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
+  const params = use(paramsPromise)
   const [post, setPost] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchPost() {
-      const data = await fetch(`/api/posts`).then(res => res.json())
-      const found = data.find((p: any) => p.slug === params.slug)
-      if (found) {
-        const contentRes = await fetch(`/api/posts/${found.id}`).then(res => res.json())
-        setPost({ ...found, serialized: contentRes.source })
+      try {
+        const data = await fetch(`/api/posts`).then(res => res.json())
+        const found = data.find((p: any) => p.slug === params.slug)
+        if (found) {
+          const contentRes = await fetch(`/api/posts/${found.id}`).then(res => res.json())
+          setPost({ ...found, serialized: contentRes.source })
+        }
+      } catch (e) {
+        console.error("Failed to fetch post", e)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     fetchPost()
   }, [params.slug])
@@ -118,7 +124,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
           <div className="flex items-center gap-2">
             <Badge 
               variant="outline" 
-              className={cn("capitalize rounded-full", getTagColor(post.type))}
+              className={cn("capitalize rounded-full border-transparent", getTagColor(post.type))}
             >
               {post.type}
             </Badge>
@@ -129,8 +135,8 @@ export default function PostPage({ params }: { params: { slug: string } }) {
               {post.tags.map(tag => (
                 <Badge 
                   key={tag} 
-                  variant="secondary" 
-                  className={cn("text-xs rounded-sm", getTagColor(tag))}
+                  variant="outline" 
+                  className={cn("text-xs rounded-sm border-transparent", getTagColor(tag))}
                 >
                   {tag}
                 </Badge>

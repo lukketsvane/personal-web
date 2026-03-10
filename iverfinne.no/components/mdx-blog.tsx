@@ -46,21 +46,20 @@ interface FilterButtonProps {
 
 const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterButtonProps) => {
   const color = getTagColor(label)
-  const bgColorClass = color.split(' ')[0]
   
   const baseStyles = "text-xs px-3 py-1 h-auto font-normal transition-colors"
   const variantStyles = {
     type: cn(
-      "hover:bg-opacity-20 dark:hover:bg-opacity-20 rounded-full",
+      "rounded-full border border-transparent",
       isActive 
         ? color 
-        : cn(bgColorClass, "bg-opacity-10 text-gray-600 dark:text-gray-400")
+        : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
     ),
     tag: cn(
-      "hover:bg-opacity-20 dark:hover:bg-opacity-20 rounded-sm",
+      "rounded-sm border border-transparent",
       isActive 
         ? color 
-        : cn(bgColorClass, "bg-opacity-10 text-gray-600 dark:text-gray-400")
+        : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
     ),
     default: "bg-gray-100/50 hover:bg-gray-200/50 text-gray-600 rounded-full"
   }
