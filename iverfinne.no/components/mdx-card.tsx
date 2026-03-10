@@ -354,7 +354,10 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="overflow-hidden mt-4"
                 >
-                  <div className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words">
+                  <div 
+                    className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {post.type === "Interaktiv" ? (
                       <HtmlIframe content={post.content} />
                     ) : serializedContent ? (
