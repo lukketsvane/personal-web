@@ -351,7 +351,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   className="overflow-hidden mt-4"
                 >
                   <div 
-                    className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words"
+                    className="prose dark:prose-invert max-w-none text-base leading-relaxed overflow-hidden break-words"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {post.type === "Interaktiv" ? (

@@ -12,6 +12,32 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        serif: ["var(--font-newsreader)", "serif"],
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: 'inherit',
+            p: {
+              fontFamily: 'var(--font-newsreader), serif',
+              fontSize: '1.125rem',
+              lineHeight: '1.75',
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
+            },
+            'h1, h2, h3, h4': {
+              fontFamily: 'var(--font-geist-sans), sans-serif',
+              fontWeight: '700',
+              letterSpacing: '-0.025em',
+            },
+            a: {
+              color: 'inherit',
+              textDecoration: 'underline',
+              fontWeight: '500',
+            },
+          },
+        },
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -62,8 +88,10 @@ const config: Config = {
       }
     }
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+  ],
 };
 
 export default config;
-

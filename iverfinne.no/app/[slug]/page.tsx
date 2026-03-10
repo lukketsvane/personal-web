@@ -159,7 +159,7 @@ export default function PostPage({ params: paramsPromise }: { params: Promise<{ 
         </div>
       )}
 
-      <div className="prose dark:prose-invert max-w-none">
+      <div className="prose prose-lg dark:prose-invert max-w-none">
         {post.serialized && (
           <MDXRemote 
             {...post.serialized} 

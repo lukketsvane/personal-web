@@ -2,6 +2,13 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
+import { Newsreader } from 'next/font/google'
+
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-newsreader',
+})
 
 const APP_NAME = 'iverfinne.no'
 const APP_DEFAULT_TITLE = 'iverfinne.no'
@@ -52,9 +59,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="nn" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="nn" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable} ${newsreader.variable}`}>
       <body>{children}</body>
     </html>
   )
 }
-

@@ -63,12 +63,20 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     overflow-x: hidden;
+  }
+  
+  p {
+    font-family: var(--font-newsreader), serif;
+    @apply leading-relaxed;
   }
 }
 
