@@ -106,7 +106,7 @@ export function ImageGallery({ images = [], className, initialIndex = null, onIn
                   e.stopPropagation()
                   setSelectedImage(null)
                 }}
-                className="absolute top-6 right-6 z-[110] rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
+                className="absolute top-6 right-6 z-[110] p-3 text-white/50 hover:text-white transition-colors"
                 aria-label="Lukk"
               >
                 <X className="h-6 w-6" />
@@ -114,7 +114,7 @@ export function ImageGallery({ images = [], className, initialIndex = null, onIn
               
               <button
                 onClick={handlePrevious}
-                className="absolute left-6 top-1/2 -translate-y-1/2 z-[110] rounded-full bg-white/10 p-4 text-white hover:bg-white/20 transition-colors backdrop-blur-sm hidden sm:block"
+                className="absolute left-6 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/20 hover:text-white/80 transition-colors hidden sm:block"
                 aria-label="Førre"
               >
                 <ChevronLeft className="h-8 w-8" />
@@ -122,7 +122,7 @@ export function ImageGallery({ images = [], className, initialIndex = null, onIn
               
               <button
                 onClick={handleNext}
-                className="absolute right-6 top-1/2 -translate-y-1/2 z-[110] rounded-full bg-white/10 p-4 text-white hover:bg-white/20 transition-colors backdrop-blur-sm hidden sm:block"
+                className="absolute right-6 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/20 hover:text-white/80 transition-colors hidden sm:block"
                 aria-label="Neste"
               >
                 <ChevronRight className="h-8 w-8" />
@@ -133,10 +133,10 @@ export function ImageGallery({ images = [], className, initialIndex = null, onIn
                   key={selectedImage}
                   src={images[selectedImage].src}
                   alt={images[selectedImage].alt}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   onDragEnd={(e, { offset, velocity }) => {
@@ -152,7 +152,7 @@ export function ImageGallery({ images = [], className, initialIndex = null, onIn
                 />
               </AnimatePresence>
               
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/10 px-4 py-2 rounded-full text-white text-xs font-medium backdrop-blur-sm">
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 text-xs font-medium tracking-widest uppercase">
                 {selectedImage + 1} / {images.length}
               </div>
             </div>
