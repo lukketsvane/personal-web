@@ -1,6 +1,8 @@
-import { getPublishedPosts, getPostBySlug, getSafeScope } from '@/lib/notion'
+'use client'
+
+import { getPostBySlug, getSafeScope } from '@/lib/notion'
 import { notFound } from 'next/navigation'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote } from 'next-mdx-remote'
 import remarkGfm from 'remark-gfm'
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar } from 'lucide-react'
@@ -13,6 +15,8 @@ import { getTagColor } from "@/lib/tag-utils"
 import { cn } from "@/lib/utils"
 import { HtmlIframe } from "@/components/html-iframe"
 import NextImage from "next/image"
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
@@ -27,41 +31,62 @@ const components = {
   material: (props: any) => <div {...props} />,
 }
 
-export async function generateStaticParams() {
-  const posts = await getPublishedPosts()
-  return posts.map((post) => ({
-    slug: post.slug,
-  }))
-}
+export default function PostPage({ params }: { params: { slug: string } }) {
+  const [post, setPost] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params
-  const post = await getPostBySlug(resolvedParams.slug)
+  useEffect(() => {
+    async function fetchPost() {
+      const data = await fetch(`/api/posts`).then(res => res.json())
+      const found = data.find((p: any) => p.slug === params.slug)
+      if (found) {
+        const contentRes = await fetch(`/api/posts/${found.id}`).then(res => res.json())
+        setPost({ ...found, serialized: contentRes.source })
+      }
+      setIsLoading(false)
+    }
+    fetchPost()
+  }, [params.slug])
 
-  if (!post) {
-    notFound()
-  }
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center">.</div>
+  if (!post) notFound()
 
   if (post.type === "Interaktiv") {
-    return <HtmlIframe content={post.content} fullScreen={true} />
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full h-screen"
+      >
+        <HtmlIframe content={post.content || ""} fullScreen={true} />
+      </motion.div>
+    )
   }
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
   const monthsFull = [
-    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
-    "Juli", "August", "September", "Oktober", "November", "Desember"
+    "januar", "februar", "mars", "april", "mai", "juni", 
+    "juli", "august", "september", "oktober", "november", "desember"
   ]
   const monthsShort = [
-    "Jan.", "Feb.", "Mars", "Apr.", "Mai", "Juni", 
-    "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Des."
+    "jan.", "feb.", "mars", "apr.", "mai", "juni", 
+    "juli", "aug.", "sep.", "okt.", "nov.", "des."
   ]
   const monthName = monthsFull[dateObj.getMonth()]
   const month = monthName.length > 4 ? monthsShort[dateObj.getMonth()] : monthName
   const year = dateObj.getFullYear()
 
   return (
-    <article className="container max-w-4xl mx-auto px-4 py-12">
+    <motion.article 
+      layoutId={`post-${post.uid}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="container max-w-4xl mx-auto px-4 py-12 min-h-screen"
+    >
       <Link 
         href="/" 
         className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
@@ -72,11 +97,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       <header className="mb-12">
         {post.type !== "Bilete" && (
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">{post.title}</h1>
+          <motion.h1 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-5xl font-bold tracking-tight mb-6"
+          >
+            {post.title}
+          </motion.h1>
         )}
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground lowercase">
             <Calendar className="w-4 h-4" />
             <time dateTime={post.date}>
               <span className="font-extrabold">{day}.</span> {month} {year}
@@ -110,7 +142,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       {post.type === "Bilete" && post.thumbnails && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-          {post.thumbnails.map((img, i) => (
+          {post.thumbnails.map((img: any, i: number) => (
             <div key={i} className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
               <NextImage
                 src={img.src}
@@ -124,17 +156,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       )}
 
       <div className="prose dark:prose-invert max-w-none">
-        <MDXRemote 
-          source={post.content} 
-          components={components}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-            },
-            scope: getSafeScope(post.content)
-          }}
-        />
+        {post.serialized && (
+          <MDXRemote 
+            {...post.serialized} 
+            components={components}
+          />
+        )}
       </div>
-    </article>
+    </motion.article>
   )
 }

@@ -217,13 +217,13 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   ]
   
   const monthIdx = dateObj.getMonth()
-  const monthName = monthsFull[monthIdx]
-  const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
+  const monthName = monthsFull[monthIdx].toLowerCase()
+  const month = monthName.length > 4 ? monthsShort[monthIdx].toLowerCase() : monthName
 
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
-        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap">
+        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap lowercase">
           <span className="font-extrabold">{day}.</span> {month}
         </time>
       </div>
@@ -234,6 +234,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
         </div>
         <div className="pb-8 pt-0">
           <motion.article 
+            layoutId={`post-${post.uid}`}
             className={cn(
               "relative rounded-lg p-4 cursor-pointer transition-all",
               isExpanded ? "dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800",
@@ -266,7 +267,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                       </button>
                     )}
                   </div>
-                  <time className="block sm:hidden text-sm text-muted-foreground mb-2">
+                  <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
                     <span className="font-extrabold">{day}.</span> {month}
                   </time>
                   <p className="text-muted-foreground text-sm">{post.description}</p>
