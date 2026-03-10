@@ -267,6 +267,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             onClick={handleClick}
             initial={false}
             animate={{ backgroundColor: isExpanded ? "rgba(0,0,0,0.02)" : "transparent" }}
+            whileTap={{ scale: 0.995 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
             {/* Title Section */}
@@ -346,7 +347,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="overflow-hidden mt-4"
                 >
                   <div className="prose dark:prose-invert max-w-none text-sm overflow-hidden break-words">

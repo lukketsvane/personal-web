@@ -241,7 +241,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         <motion.div 
           className="relative mt-4"
           layout
-          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          transition={{ duration: 0.2, ease: "linear" }}
         >
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
