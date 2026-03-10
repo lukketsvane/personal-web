@@ -139,8 +139,11 @@ function getPageProperties(page: any) {
   const tags = getMultiSelect(["Merkelappar", "Tags"]);
   const url = getUrl(["URL", "Link", "Lenkje"]);
   
-  let image: string | undefined = undefined;
-  if (page.cover) {
+  // Spesifikk sjekk for bokomslag eller hovudbilete i eigenskapar
+  const coverFromProp = getUrl(["Omslag", "Cover", "Bilete"]);
+  
+  let image: string | undefined = coverFromProp || undefined;
+  if (!image && page.cover) {
     if (page.cover.type === "external") {
       image = page.cover.external.url;
     } else if (page.cover.type === "file") {

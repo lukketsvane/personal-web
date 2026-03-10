@@ -132,14 +132,33 @@ export default function DynamicPage({ params: paramsPromise }: { params: Promise
 
       <header className="mb-12">
         {post.type !== "Bilete" && (
-          <motion.h1 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl font-bold tracking-tight mb-6"
-          >
-            {post.title}
-          </motion.h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-8 mb-8">
+            <motion.h1 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl sm:text-5xl font-bold tracking-tight"
+            >
+              {post.title}
+            </motion.h1>
+            
+            {post.type === "Bok" && (post.image || post.icon) && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative w-32 sm:w-40 aspect-[2/3] shrink-0 shadow-xl rounded-md overflow-hidden border border-gray-100 dark:border-gray-800"
+              >
+                <NextImage
+                  src={post.image || post.icon || ""}
+                  alt={`Omslag for ${post.title}`}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+            )}
+          </div>
         )}
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">

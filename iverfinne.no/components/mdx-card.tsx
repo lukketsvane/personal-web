@@ -300,8 +300,20 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   </time>
                   <p className="text-muted-foreground text-sm font-serif">{post.description}</p>
                 </div>
-                {post.type === "Bok" && post.icon && (
-                  <div className="relative w-16 h-16 shrink-0">
+                {post.type === "Bok" && (post.image || post.icon) && (
+                  <div className="relative w-20 sm:w-24 aspect-[2/3] shrink-0 ml-4 shadow-md rounded-sm overflow-hidden border border-gray-100 dark:border-gray-800">
+                    <NextImage
+                      src={post.image || post.icon || ""}
+                      alt={`Omslag for ${post.title}`}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="(max-width: 640px) 80px, 96px"
+                    />
+                  </div>
+                )}
+                {post.type !== "Bok" && post.type !== "Bilete" && post.icon && (
+                  <div className="relative w-16 h-16 shrink-0 ml-4">
                     <NextImage
                       src={post.icon}
                       alt=""
