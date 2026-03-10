@@ -328,40 +328,59 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             )}
 
             {/* Image Grid for "Bilete" or Thumbnails for others */}
-            {post.thumbnails && post.thumbnails.length > 0 && (
+            {post.type !== "Skriving" && post.thumbnails && post.thumbnails.length > 0 && (
               <div className={cn(
                 "grid gap-2 mb-4",
-                post.type === "Bilete" ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" : "grid-cols-3"
+                post.type === "Bilete" ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"
               )}>
-                {(post.type === "Bilete" ? post.thumbnails : post.thumbnails.slice(0, 3)).map((img, i) => (
-                  <div 
-                    key={`${post.uid}-thumb-${i}`}
-                    className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
-                    onClick={(e) => {
-                      if (post.type === "Bilete") {
-                        e.stopPropagation()
-                        setSelectedGalleryImage(i)
-                      }
-                    }}
-                  >
-                    {img.src.endsWith('.glb') ? (
-                      <ModelViewer 
-                        src={img.src} 
-                        alt={img.alt} 
-                        disableZoom={true} 
-                        disablePan={true}
-                        className="h-full w-full"
-                      />
-                    ) : (
-                      <NextImage
-                        src={img.src}
-                        alt={img.alt}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                ))}
+                {(post.type === "Bilete" ? post.thumbnails.slice(0, 8) : post.thumbnails.slice(0, 3)).map((img, i) => {
+                  const isLastVisible = post.type === "Bilete" && (
+                    (i === 3 && post.thumbnails!.length > 4) || // Last on mobile (2x2)
+                    (i === 7 && post.thumbnails!.length > 8)    // Last on desktop (4x2)
+                  );
+                  
+                  const isHiddenOnMobile = i >= 4;
+
+                  return (
+                    <div 
+                      key={`${post.uid}-thumb-${i}`}
+                      className={cn(
+                        "aspect-square relative bg-gray-100 rounded-md overflow-hidden group/thumb",
+                        post.type === "Bilete" && isHiddenOnMobile && "hidden sm:block"
+                      )}
+                      onClick={(e) => {
+                        if (post.type === "Bilete") {
+                          e.stopPropagation()
+                          setSelectedGalleryImage(i)
+                        }
+                      }}
+                    >
+                      {img.src.endsWith('.glb') ? (
+                        <ModelViewer 
+                          src={img.src} 
+                          alt={img.alt} 
+                          disableZoom={true} 
+                          disablePan={true}
+                          className="h-full w-full"
+                        />
+                      ) : (
+                        <NextImage
+                          src={img.src}
+                          alt={img.alt}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                      
+                      {/* Plus overlay for the last visible image if there are more */}
+                      {isLastVisible && (
+                        <div className="absolute inset-0 bg-black/10 flex items-center justify-center pointer-events-none group-hover/thumb:bg-black/20 transition-colors">
+                          <Plus className="text-white w-8 h-8 opacity-20 group-hover/thumb:opacity-50 transition-opacity" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
