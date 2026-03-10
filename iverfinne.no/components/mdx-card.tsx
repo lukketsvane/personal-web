@@ -257,11 +257,24 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
-                      <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </h2>
-                    </Link>
+                    {post.type === "Lenkje" && post.url ? (
+                      <a 
+                        href={post.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                          {post.title}
+                        </h2>
+                      </a>
+                    ) : (
+                      <Link href={`/${post.slug}`} onClick={(e) => e.stopPropagation()}>
+                        <h2 className="text-2xl font-semibold tracking-tight mb-2 hover:text-blue-600 transition-colors">
+                          {post.title}
+                        </h2>
+                      </Link>
+                    )}
                     {post.url && (
                       <button 
                         onClick={(e) => { e.stopPropagation(); window.open(post.url, '_blank') }}
