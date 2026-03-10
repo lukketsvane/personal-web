@@ -42,8 +42,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const monthRaw = dateObj.toLocaleDateString('nn-NO', { month: 'long' })
-  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
+  const months = [
+    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
+    "Juli", "August", "September", "Oktober", "November", "Desember"
+  ]
+  const month = months[dateObj.getMonth()]
   const year = dateObj.getFullYear()
 
   return (

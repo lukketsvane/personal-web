@@ -241,8 +241,11 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
 
   const dateObj = new Date(post.date)
   const day = dateObj.getDate()
-  const monthRaw = dateObj.toLocaleDateString('nn-NO', { month: 'long' })
-  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
+  const months = [
+    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
+    "Juli", "August", "September", "Oktober", "November", "Desember"
+  ]
+  const month = months[dateObj.getMonth()]
 
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
@@ -289,7 +292,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                     </button>
                   )}
                 </div>
-                <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
+                <time className="block sm:hidden text-sm text-muted-foreground mb-2">
                   <span className="font-extrabold">{day}.</span> {month}
                 </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>

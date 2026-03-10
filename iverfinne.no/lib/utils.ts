@@ -7,9 +7,12 @@ export function cn(...inputs: ClassValue[]): string {
 
 export function formatDate(date: string): string {
   const d = new Date(date)
-  const day = d.toLocaleDateString('nn-NO', { day: '2-digit' })
-  const monthRaw = d.toLocaleDateString('nn-NO', { month: 'long' })
-  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
+  const day = d.getDate().toString().padStart(2, '0')
+  const months = [
+    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
+    "Juli", "August", "September", "Oktober", "November", "Desember"
+  ]
+  const month = months[d.getMonth()]
   const year = d.getFullYear()
   return `${day}. ${month} ${year}`
 }
