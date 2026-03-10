@@ -8,11 +8,17 @@ export function cn(...inputs: ClassValue[]): string {
 export function formatDate(date: string): string {
   const d = new Date(date)
   const day = d.getDate().toString().padStart(2, '0')
-  const months = [
-    "Januar", "Februar", "Mars", "April", "Mai", "Juni", 
-    "Juli", "August", "September", "Oktober", "November", "Desember"
+  const monthsFull = [
+    "januar", "februar", "mars", "april", "mai", "juni", 
+    "juli", "august", "september", "oktober", "november", "desember"
   ]
-  const month = months[d.getMonth()]
+  const monthsShort = [
+    "jan.", "feb.", "mars", "apr.", "mai", "juni", 
+    "juli", "aug.", "sep.", "okt.", "nov.", "des."
+  ]
+  const monthIdx = d.getMonth()
+  const monthName = monthsFull[monthIdx]
+  const month = monthName.length > 4 ? monthsShort[monthIdx] : monthName
   const year = d.getFullYear()
   return `${day}. ${month} ${year}`
 }
