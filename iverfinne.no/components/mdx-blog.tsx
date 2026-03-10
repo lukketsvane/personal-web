@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { MDXCard } from "./mdx-card"
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { getTagColor } from "@/lib/tag-utils"
+import { useRouter } from "next/navigation"
 
 interface Post {
   uid: string
@@ -54,13 +55,13 @@ const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterB
       "rounded-full border",
       isActive 
         ? color 
-        : cn(border, "bg-transparent text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800")
+        : "bg-white dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-800 hover:border-gray-300"
     ),
     tag: cn(
       "rounded-sm border",
       isActive 
         ? color 
-        : cn(border, "bg-transparent text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800")
+        : "bg-white dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-800 hover:border-gray-300"
     ),
     default: "bg-gray-100/50 hover:bg-gray-200/50 text-gray-600 rounded-full"
   }
@@ -82,12 +83,16 @@ const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterB
 
 interface MDXBlogProps {
   initialPosts?: Post[]
+  initialType?: string
 }
 
-export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
+export default function MDXBlog({ initialPosts = [], initialType }: MDXBlogProps) {
+  const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([])
   const [search, setSearch] = useState("")
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(
+    initialType ? [contentTypes.find(t => t.value.toLowerCase() === initialType.toLowerCase())?.value || ""].filter(Boolean) : []
+  )
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
@@ -105,6 +110,18 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
   useEffect(() => {
     setPosts(initialPosts)
   }, [initialPosts])
+
+  // Update selected types if initialType changes (via route navigation)
+  useEffect(() => {
+    if (initialType) {
+      const typeLabel = contentTypes.find(t => t.value.toLowerCase() === initialType.toLowerCase())?.value
+      if (typeLabel) {
+        setSelectedTypes([typeLabel])
+      }
+    } else {
+      setSelectedTypes([])
+    }
+  }, [initialType])
 
   const filteredPosts = useMemo(() => {
     try {
@@ -163,14 +180,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     }
   }
 
-  if (error) {
-    return (
-      <div className="p-4 text-red-500 dark:text-red-400">
-        {error}
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-screen overflow-hidden">
       <aside className="w-full lg:w-48 space-y-4 shrink-0">
@@ -182,11 +191,19 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                 label={type.label}
                 isActive={selectedTypes.includes(type.value)}
                 onClick={() => {
-                  setSelectedTypes((prev) =>
-                    prev.includes(type.value)
-                      ? prev.filter((t) => t !== type.value)
-                      : [...prev, type.value]
-                  )
+                  const isSelected = selectedTypes.includes(type.value)
+                  const newTypes = isSelected
+                    ? selectedTypes.filter((t) => t !== type.value)
+                    : [...selectedTypes, type.value]
+                  
+                  setSelectedTypes(newTypes)
+                  
+                  // Naviger til ny rute viss nøyaktig éin type er vald
+                  if (newTypes.length === 1) {
+                    router.push(`/${newTypes[0].toLowerCase()}`)
+                  } else if (newTypes.length === 0) {
+                    router.push('/')
+                  }
                 }}
                 variant="type"
               />

@@ -1,6 +1,6 @@
 'use client'
 
-import { getPostBySlug, getSafeScope } from '@/lib/notion'
+import { getPostBySlug, getSafeScope, VALID_TYPES, getPublishedPosts, getPostContent } from '@/lib/notion'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote'
 import remarkGfm from 'remark-gfm'
@@ -17,12 +17,14 @@ import { HtmlIframe } from "@/components/html-iframe"
 import NextImage from "next/image"
 import { motion } from 'framer-motion'
 import { useEffect, useState, use } from 'react'
+import MDXBlog from '@/components/mdx-blog'
+import { serialize } from 'next-mdx-remote/serialize'
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
   h2: (props: any) => <h2 {...props} className="text-2xl font-semibold mt-6 mb-3 break-words" />,
   h3: (props: any) => <h3 {...props} className="text-xl font-medium mt-4 mb-2 break-words" />,
-  p: (props: any) => <p {...props} className="mb-4 leading-relaxed break-words" />,
+  p: (props: any) => <p {...props} className="mb-4 leading-relaxed break-words font-serif text-lg" />,
   img: (props: any) => <img {...props} className="max-w-full h-auto rounded-lg my-6" />,
   ImageGallery,
   ResponsiveIframe,
@@ -31,14 +33,29 @@ const components = {
   material: (props: any) => <div {...props} />,
 }
 
-export default function PostPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
+export default function DynamicPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
   const params = use(paramsPromise)
   const [post, setPost] = useState<any>(null)
+  const [allPosts, setAllPosts] = useState<any[]>([])
+  const [isTypePage, setIsTypePage] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchPost() {
+    async function fetchData() {
       try {
+        const slugLower = params.slug.toLowerCase()
+        
+        // Sjekk om dette er ein "Type"-side (t.d. /skriving)
+        if (VALID_TYPES.includes(slugLower)) {
+          setIsTypePage(true)
+          const res = await fetch('/api/posts')
+          const data = await res.json()
+          setAllPosts(data)
+          setIsLoading(false)
+          return
+        }
+
+        // Viss ikkje, hent enkeltinnlegg
         const data = await fetch(`/api/posts`).then(res => res.json())
         const found = data.find((p: any) => p.slug === params.slug)
         if (found) {
@@ -46,15 +63,27 @@ export default function PostPage({ params: paramsPromise }: { params: Promise<{ 
           setPost({ ...found, serialized: contentRes.source })
         }
       } catch (e) {
-        console.error("Failed to fetch post", e)
+        console.error("Failed to fetch data", e)
       } finally {
         setIsLoading(false)
       }
     }
-    fetchPost()
+    fetchData()
   }, [params.slug])
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">.</div>
+
+  // Viss dette er ei rute for ein type (t.d. /skriving), vis hovudbloggen ferdig filtrert
+  if (isTypePage) {
+    // Finn den nøyaktige typen frå lista (for å få rett kapitalisering)
+    const displayType = params.slug.charAt(0).toUpperCase() + params.slug.slice(1)
+    return (
+      <div className="container w-screen px-4 py-8">
+        <MDXBlog initialPosts={allPosts} initialType={displayType} />
+      </div>
+    )
+  }
+
   if (!post) notFound()
 
   if (post.type === "Interaktiv") {
@@ -145,17 +174,8 @@ export default function PostPage({ params: paramsPromise }: { params: Promise<{ 
       </header>
 
       {post.type === "Bilete" && post.thumbnails && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-          {post.thumbnails.map((img: any, i: number) => (
-            <div key={i} className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
-              <NextImage
-                src={img.src}
-                alt={img.alt}
-                fill
-                className="object-cover"
-              />
-            </div>
-          ))}
+        <div className="mb-12">
+          <ImageGallery images={post.thumbnails} />
         </div>
       )}
 
