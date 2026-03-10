@@ -4,9 +4,3 @@ declare module '*.mdx' {
     export default component
   }
   
-  declare namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': any;
-    }
-  }
-  
