@@ -69,7 +69,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <div className="flex items-center gap-2">
             <Badge 
               variant="outline" 
-              className={cn("capitalize rounded-sm", getTagColor(post.type))}
+              className={cn("capitalize rounded-full", getTagColor(post.type))}
             >
               {post.type}
             </Badge>
@@ -77,7 +77,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
           {Array.isArray(post.tags) && post.tags.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <Tag className="w-4 h-4" />
               {post.tags.map(tag => (
                 <Badge 
                   key={tag} 

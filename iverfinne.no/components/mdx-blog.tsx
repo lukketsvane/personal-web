@@ -180,7 +180,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
     <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-screen overflow-hidden">
       <aside className="w-full lg:w-48 space-y-4 shrink-0">
         <div className="space-y-2">
-          <h2 className="text-xs font-medium text-gray-500 lowercase">type</h2>
           <div className="flex flex-wrap gap-1.5">
             {contentTypes.map((type) => (
               <FilterButton
@@ -200,7 +199,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
           </div>
         </div>
         <div className="space-y-2">
-          <h2 className="text-xs font-medium text-gray-500 lowercase">emneknaggar</h2>
           <div className="flex flex-wrap gap-1.5">
             {displayTags.map((tag) => (
               <FilterButton

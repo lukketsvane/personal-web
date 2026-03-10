@@ -263,14 +263,14 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
           <motion.article 
             className={cn(
               "relative rounded-lg p-4 cursor-pointer transition-all",
-              isExpanded ? "bg-blue-50 dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800",
+              isExpanded ? "dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800",
               post.type === "Lenkje" && "hover:cursor-alias",
               "ml-0"
             )}
             onClick={handleClick}
             initial={false}
-            animate={{ backgroundColor: isExpanded ? "#f0f9ff" : "transparent" }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            animate={{ backgroundColor: isExpanded ? "rgba(0,0,0,0.02)" : "transparent" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
           >
             {/* Title Section */}
             <div className="flex items-start justify-between gap-4 mb-4">

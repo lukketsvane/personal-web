@@ -10,6 +10,7 @@ export default async function Home() {
   // Using unstable_cache inside getPostContent makes this very fast after the first run.
   const postsWithContent = await Promise.all(posts.map(async (post) => {
     try {
+      if (!post.id) return post;
       const content = await getPostContent(post.id)
       const serialized = await serialize(content, {
         mdxOptions: {
