@@ -16,9 +16,8 @@ export const metadata: Metadata = {
   },
   description: APP_DESCRIPTION,
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/icon.svg',
+    apple: '/icon.svg',
   },
   appleWebApp: {
     capable: true,
