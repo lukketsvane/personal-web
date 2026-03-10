@@ -238,8 +238,7 @@ export const getPublishedPosts = unstable_cache(
                 .map((b: any) => ({
                   src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
                   alt: b.image.caption?.[0]?.plain_text || props.title
-                }))
-                .slice(0, 9);
+                }));
               if (images.length > 0) {
                 thumbnails = images;
               }
@@ -331,8 +330,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       .map((b: any) => ({
         src: b.image.type === 'external' ? b.image.external.url : b.image.file.url,
         alt: b.image.caption?.[0]?.plain_text || props.title
-      }))
-      .slice(0, 9);
+      }));
     if (images.length > 0) {
       thumbnails = images;
     }

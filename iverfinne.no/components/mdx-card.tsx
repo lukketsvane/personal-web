@@ -331,9 +331,9 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             {post.thumbnails && post.thumbnails.length > 0 && (
               <div className={cn(
                 "grid gap-2 mb-4",
-                post.type === "Bilete" ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"
+                post.type === "Bilete" ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" : "grid-cols-3"
               )}>
-                {(post.type === "Bilete" ? post.thumbnails.slice(0, 4) : post.thumbnails.slice(0, 3)).map((img, i) => (
+                {(post.type === "Bilete" ? post.thumbnails : post.thumbnails.slice(0, 3)).map((img, i) => (
                   <div 
                     key={`${post.uid}-thumb-${i}`}
                     className="aspect-square relative bg-gray-100 rounded-md overflow-hidden"
