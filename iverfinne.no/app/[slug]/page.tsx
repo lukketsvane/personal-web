@@ -124,7 +124,7 @@ export default function PostPage({ params: paramsPromise }: { params: Promise<{ 
           <div className="flex items-center gap-2">
             <Badge 
               variant="outline" 
-              className={cn("capitalize rounded-full border-transparent", getTagColor(post.type))}
+              className={cn("capitalize rounded-full", getTagColor(post.type))}
             >
               {post.type}
             </Badge>
@@ -136,7 +136,7 @@ export default function PostPage({ params: paramsPromise }: { params: Promise<{ 
                 <Badge 
                   key={tag} 
                   variant="outline" 
-                  className={cn("text-xs rounded-sm border-transparent", getTagColor(tag))}
+                  className={cn("text-xs rounded-sm", getTagColor(tag))}
                 >
                   {tag}
                 </Badge>
