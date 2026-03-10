@@ -14,18 +14,20 @@ interface ImageGalleryProps {
   className?: string
 }
 
-export function ImageGallery({ images, className }: ImageGalleryProps) {
+export function ImageGallery({ images = [], className }: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
   const handlePrevious = useCallback((e?: React.MouseEvent) => {
+    if (!images || images.length === 0) return
     e?.stopPropagation() // Prevent closing dialog
     setSelectedImage(prev => prev !== null ? (prev - 1 + images.length) % images.length : null)
-  }, [images.length])
+  }, [images?.length])
 
   const handleNext = useCallback((e?: React.MouseEvent) => {
+    if (!images || images.length === 0) return
     e?.stopPropagation() // Prevent closing dialog
     setSelectedImage(prev => prev !== null ? (prev + 1) % images.length : null)
-  }, [images.length])
+  }, [images?.length])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,6 +45,8 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [selectedImage, handlePrevious, handleNext])
+
+  if (!images || images.length === 0) return null
 
   return (
     <>
