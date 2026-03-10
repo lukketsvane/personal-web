@@ -229,15 +229,35 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
           transition={{ duration: 0.2, ease: "linear" }}
         >
           {filteredPosts.length > 0 ? (
-            filteredPosts.map((post) => (
-              <MDXCard
-                key={post.uid}
-                post={post}
-                isExpanded={expandedPosts.has(post.uid)}
-                onToggle={() => handlePostToggle(post.uid)}
-                serializedContent={post.serialized || null}
-              />
-            ))
+            filteredPosts.map((post, index) => {
+              const currentYear = new Date(post.date).getFullYear()
+              const prevYear = index > 0 ? new Date(filteredPosts[index - 1].date).getFullYear() : null
+              const showYear = currentYear !== prevYear
+
+              return (
+                <div key={post.uid}>
+                  {showYear && (
+                    <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 mb-4">
+                      <div className="hidden sm:block w-24 shrink-0" />
+                      <div className="relative">
+                        <div className="absolute left-0 w-0.5 top-0 bottom-0 bg-gray-200 dark:bg-gray-700 -translate-x-1/2" />
+                        <div className="py-4">
+                          <span className="bg-white dark:bg-gray-900 px-3 py-1 text-sm font-bold text-gray-400 border border-gray-200 dark:border-gray-700 rounded-full relative z-10 -translate-x-1/2 inline-block">
+                            {currentYear}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <MDXCard
+                    post={post}
+                    isExpanded={expandedPosts.has(post.uid)}
+                    onToggle={() => handlePostToggle(post.uid)}
+                    serializedContent={post.serialized || null}
+                  />
+                </div>
+              )
+            })
           ) : (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               {error ? 'Feil ved lasting av innlegg' : 'Fann ingen innlegg som passar søket.'}
