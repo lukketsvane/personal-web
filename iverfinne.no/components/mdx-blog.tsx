@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { cn } from "@/lib/utils"
 import { MDXCard } from "./mdx-card"
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
+import { getTagColor } from "@/lib/tag-utils"
 
 interface Post {
   uid: string
@@ -28,22 +29,22 @@ interface Post {
 }
 
 const contentTypes = [
-  { label: "Skriving", value: "Skriving", color: "bg-blue-500 text-white" },
-  { label: "Bok", value: "Bok", color: "bg-green-500 text-white" },
-  { label: "Prosjekt", value: "Prosjekt", color: "bg-purple-500 text-white" },
-  { label: "Lenkje", value: "Lenkje", color: "bg-orange-500 text-white" },
+  { label: "Skriving", value: "Skriving" },
+  { label: "Bok", value: "Bok" },
+  { label: "Prosjekt", value: "Prosjekt" },
+  { label: "Lenkje", value: "Lenkje" },
 ]
 
 interface FilterButtonProps {
   label: string
   isActive: boolean
   onClick: () => void
-  color?: string
   variant?: "type" | "tag" | "default"
 }
 
-const FilterButton = ({ label, isActive, onClick, color, variant = "default" }: FilterButtonProps) => {
-  const bgColorClass = color?.split(' ')[0]
+const FilterButton = ({ label, isActive, onClick, variant = "default" }: FilterButtonProps) => {
+  const color = getTagColor(label)
+  const bgColorClass = color.split(' ')[0]
   
   const baseStyles = "text-xs px-3 py-1 h-auto font-normal transition-colors"
   const variantStyles = {
@@ -70,7 +71,7 @@ const FilterButton = ({ label, isActive, onClick, color, variant = "default" }: 
       className={cn(
         baseStyles,
         variantStyles[variant],
-        "rounded-full"
+        "rounded-sm"
       )}
     >
       {label}
@@ -193,14 +194,13 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                       : [...prev, type.value]
                   )
                 }}
-                color={type.color}
                 variant="type"
               />
             ))}
           </div>
         </div>
-        <div className="space-y-0.5">
-
+        <div className="space-y-2">
+          <h2 className="text-xs font-medium text-gray-500 lowercase">emneknaggar</h2>
           <div className="flex flex-wrap gap-1.5">
             {displayTags.map((tag) => (
               <FilterButton
@@ -214,7 +214,6 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
                       : [...prev, tag]
                   )
                 }}
-                color="bg-gray-500 text-white"
                 variant="tag"
               />
             ))}
@@ -235,7 +234,7 @@ export default function MDXBlog({ initialPosts = [] }: MDXBlogProps) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <Input
-            placeholder="Søk her"
+            placeholder="Leit i arkivet..."
             className="pl-10 py-2 text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

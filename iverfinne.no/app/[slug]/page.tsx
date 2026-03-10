@@ -9,6 +9,8 @@ import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
 import WebDesignKeys from '@/components/WebDesignKeys'
+import { getTagColor } from "@/lib/tag-utils"
+import { cn } from "@/lib/utils"
 
 const components = {
   h1: (props: any) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 break-words" />,
@@ -38,6 +40,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     notFound()
   }
 
+  const dateObj = new Date(post.date)
+  const day = dateObj.getDate()
+  const month = dateObj.toLocaleDateString('nn-NO', { month: 'long' }).toLowerCase()
+  const year = dateObj.getFullYear()
+
   return (
     <article className="container max-w-4xl mx-auto px-4 py-12">
       <Link 
@@ -52,19 +59,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">{post.title}</h1>
         
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground lowercase">
             <Calendar className="w-4 h-4" />
             <time dateTime={post.date}>
-              <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
-              {new Date(post.date).toLocaleDateString('nn-NO', {
-                month: 'long',
-                year: 'numeric'
-              })}
+              <span className="font-extrabold">{day}.</span> {month} {year}
             </time>
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="capitalize">
+            <Badge 
+              variant="outline" 
+              className={cn("capitalize rounded-sm", getTagColor(post.type))}
+            >
               {post.type}
             </Badge>
           </div>
@@ -73,7 +79,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <div className="flex items-center gap-2 flex-wrap">
               <Tag className="w-4 h-4" />
               {post.tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="text-xs">
+                <Badge 
+                  key={tag} 
+                  variant="secondary" 
+                  className={cn("text-xs rounded-sm", getTagColor(tag))}
+                >
                   {tag}
                 </Badge>
               ))}

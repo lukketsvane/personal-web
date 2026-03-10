@@ -46,6 +46,7 @@ import {
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { getTagColor } from "@/lib/tag-utils"
 import { ImageGallery } from "@/components/image-gallery"
 import { ResponsiveIframe } from "@/components/responsive-iframe"
 import { ModelViewer } from "@/components/model-viewer"
@@ -186,36 +187,6 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
   const [showAllTags, setShowAllTags] = useState(false)
 
-  const tagColors = useMemo(() => {
-    if (!Array.isArray(post.tags)) return {}
-    return post.tags.reduce((acc, tag) => {
-      switch (tag) {
-        case "sign language":
-        case "machine learning":
-        case "computer vision":
-          return { ...acc, [tag]: "bg-blue-500 hover:bg-blue-600" }
-        case "accessibility":
-        case "gesture recognition":
-          return { ...acc, [tag]: "bg-green-500 hover:bg-green-600" }
-        case "advent-of-code":
-          return { ...acc, [tag]: "bg-red-500 hover:bg-red-600" }
-        case "philosophy":
-        case "visualization":
-        case "d3js":
-        case "wittgenstein":
-        case "react":
-          return { ...acc, [tag]: "bg-purple-500 hover:bg-purple-600" }
-        case "3D":
-        case "design":
-        case "interactive":
-        case "spline":
-          return { ...acc, [tag]: "bg-yellow-500 hover:bg-yellow-600" }
-        default:
-          return { ...acc, [tag]: "bg-gray-500 hover:bg-gray-600" }
-      }
-    }, {} as Record<string, string>)
-  }, [post.tags])
-
   const handleClick = () => {
     if (post.type === "Lenkje" && post.url) {
       window.open(post.url, '_blank')
@@ -252,8 +223,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
             key={`${post.uid}-tag-${tag}`}
             variant="secondary"
             className={cn(
-              "text-xs px-2 py-0.5 rounded-full font-medium transition-colors text-white",
-              tagColors[tag]
+              "text-xs px-2 py-0.5 rounded-sm font-medium transition-colors",
+              getTagColor(tag)
             )}
           >
             {tag}
@@ -262,7 +233,7 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
         {!showAllTags && remainingTags > 0 && (
           <Badge 
             variant="secondary"
-            className="text-xs px-2 py-0.5 rounded-full font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
+            className="text-xs px-2 py-0.5 rounded-sm font-medium transition-colors bg-gray-500 hover:bg-gray-600 text-white cursor-pointer"
             onClick={handleShowAllTags}
           >
             ...
@@ -272,12 +243,15 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
     )
   }
 
+  const dateObj = new Date(post.date)
+  const day = dateObj.getDate()
+  const month = dateObj.toLocaleDateString('nn-NO', { month: 'long' }).toLowerCase()
+
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
-        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap">
-          <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
-          {new Date(post.date).toLocaleDateString('nn-NO', { month: 'long' })}
+        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap lowercase">
+          <span className="font-extrabold">{day}.</span> {month}
         </time>
       </div>
       <div className="relative min-w-0">
@@ -317,9 +291,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                     </button>
                   )}
                 </div>
-                <time className="block sm:hidden text-sm text-muted-foreground mb-2">
-                  <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
-                  {new Date(post.date).toLocaleDateString('nn-NO', { month: 'long' })}
+                <time className="block sm:hidden text-sm text-muted-foreground mb-2 lowercase">
+                  <span className="font-extrabold">{day}.</span> {month}
                 </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
               </div>
