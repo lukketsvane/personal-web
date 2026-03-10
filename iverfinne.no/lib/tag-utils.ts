@@ -1,29 +1,20 @@
 import { cn } from "./utils"
 
-// Meir subtile fargar (muted colors)
+// Meir varierte, men framleis mjuke pastellfargar (muted but distinct)
 const TAG_COLORS = [
-  "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
-  "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
-  "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-  "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  "bg-lime-50 text-lime-700 dark:bg-lime-900/30 dark:text-lime-300",
-  "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-  "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
-  "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
-  "bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300",
-  "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
-  "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
-  "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-  "bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300",
-  "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
-  "bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
+  "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800",
+  "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800",
+  "bg-violet-50 text-violet-600 border-violet-100 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-800",
+  "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800",
+  "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800",
+  "bg-cyan-50 text-cyan-600 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-800",
+  "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800",
+  "bg-teal-50 text-teal-600 border-teal-100 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-800",
+  "bg-fuchsia-50 text-fuchsia-600 border-fuchsia-100 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 dark:border-fuchsia-800",
+  "bg-sky-50 text-sky-600 border-sky-100 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-800",
+  "bg-lime-50 text-lime-600 border-lime-100 dark:bg-lime-900/30 dark:text-lime-300 dark:border-lime-800",
+  "bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800",
+  "bg-pink-50 text-pink-600 border-pink-100 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-800",
 ]
 
 const stringToHash = (str: string) => {
@@ -37,20 +28,20 @@ const stringToHash = (str: string) => {
 export const getTagColor = (tag: string) => {
   const lowercaseTag = tag.toLowerCase()
   
-  // Spesielle fargar for hovudtypar (framleis tydelege, men meir balanserte)
+  // Faste, gjenkjennbare fargar for hovudtypar (mjuke versjonar)
   switch (lowercaseTag) {
     case "skriving":
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
+      return "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
     case "bok":
-      return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200"
+      return "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
     case "prosjekt":
-      return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200"
+      return "bg-violet-50 text-violet-600 border-violet-100 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-800"
     case "lenkje":
-      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200"
+      return "bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800"
     case "interaktiv":
-      return "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-200"
+      return "bg-pink-50 text-pink-600 border-pink-100 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-800"
     case "bilete":
-      return "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-200"
+      return "bg-cyan-50 text-cyan-600 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-800"
   }
 
   // Generer unik farge basert på hash for alle andre merkelappar

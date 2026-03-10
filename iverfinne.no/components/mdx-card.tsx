@@ -184,11 +184,18 @@ const TimelineNode = ({ type, onToggle }: { type: string, onToggle: () => void }
 
 export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCardProps) {
   const renderTags = () => {
-    if (!Array.isArray(post.tags)) return null
-
     return (
       <div className="flex gap-1.5 flex-wrap">
-        {post.tags.map((tag) => (
+        <Badge 
+          variant="outline"
+          className={cn(
+            "text-xs px-2 py-0.5 rounded-full font-medium transition-colors border-transparent",
+            getTagColor(post.type)
+          )}
+        >
+          {post.type}
+        </Badge>
+        {Array.isArray(post.tags) && post.tags.map((tag) => (
           <Badge 
             key={`${post.uid}-tag-${tag}`}
             variant="outline"
