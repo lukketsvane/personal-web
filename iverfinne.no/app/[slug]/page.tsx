@@ -55,10 +55,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             <time dateTime={post.date}>
+              <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
               {new Date(post.date).toLocaleDateString('nn-NO', {
-                year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                year: 'numeric'
               })}
             </time>
           </div>
@@ -91,7 +91,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               remarkPlugins: [remarkGfm],
             },
             scope: {
-              material: {}
+              material: {}, tid: {}, geografi: {}, geometri: {}, design: {}, kultur: {}, norsk: {}, historie: {}, 
+              materiale: {}, skriving: {}, teknologi: {}, kunst: {}, filosofi: {}, berekraft: {}, landbruk: {},
+              innovasjon: {}, utdanning: {}, spel: {}, fotografi: {}, marknadsføring: {}, verktøy: {}, skisser: {},
+              algoritmar: {}, kreativitet: {}, automatisering: {}, tilgjenge: {}, datastrukturar: {}
             }
           }}
         />

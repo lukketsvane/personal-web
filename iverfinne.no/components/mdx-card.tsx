@@ -275,11 +275,9 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
   return (
     <div className="relative grid grid-cols-1 sm:grid-cols-[auto,1fr] gap-4 max-w-full pl-4 sm:pl-0">
       <div className="hidden sm:block text-right pt-5 pr-6 w-24 shrink-0">
-        <time className="text-lg font-semibold text-muted-foreground">
-          {new Date(post.date).toLocaleDateString('nn-NO', { 
-            month: '2-digit', 
-            day: '2-digit' 
-          })}
+        <time className="text-lg font-semibold text-muted-foreground whitespace-nowrap">
+          <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
+          {new Date(post.date).toLocaleDateString('nn-NO', { month: 'long' })}
         </time>
       </div>
       <div className="relative min-w-0">
@@ -320,10 +318,8 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                   )}
                 </div>
                 <time className="block sm:hidden text-sm text-muted-foreground mb-2">
-                  {new Date(post.date).toLocaleDateString('nn-NO', { 
-                    month: '2-digit', 
-                    day: '2-digit' 
-                  })}
+                  <span className="font-extrabold">{new Date(post.date).getDate()}.</span>{' '}
+                  {new Date(post.date).toLocaleDateString('nn-NO', { month: 'long' })}
                 </time>
                 <p className="text-muted-foreground text-sm">{post.description}</p>
               </div>
@@ -390,6 +386,12 @@ export function MDXCard({ post, isExpanded, onToggle, serializedContent }: MDXCa
                         components={{
                           ...mdxComponents,
                           WebDesignKeys
+                        }}
+                        scope={{
+                          material: {}, tid: {}, geografi: {}, geometri: {}, design: {}, kultur: {}, norsk: {}, historie: {}, 
+                          materiale: {}, skriving: {}, teknologi: {}, kunst: {}, filosofi: {}, berekraft: {}, landbruk: {},
+                          innovasjon: {}, utdanning: {}, spel: {}, fotografi: {}, marknadsføring: {}, verktøy: {}, skisser: {},
+                          algoritmar: {}, kreativitet: {}, automatisering: {}, tilgjenge: {}, datastrukturar: {}
                         }}
                       />
                     ) : (

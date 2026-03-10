@@ -20,7 +20,10 @@ export async function GET(
         format: 'mdx',
       },
       scope: {
-        material: {} // Fiksar ReferenceError: material is not defined
+        material: {}, tid: {}, geografi: {}, geometri: {}, design: {}, kultur: {}, norsk: {}, historie: {}, 
+        materiale: {}, skriving: {}, teknologi: {}, kunst: {}, filosofi: {}, berekraft: {}, landbruk: {},
+        innovasjon: {}, utdanning: {}, spel: {}, fotografi: {}, marknadsføring: {}, verktøy: {}, skisser: {},
+        algoritmar: {}, kreativitet: {}, automatisering: {}, tilgjenge: {}, datastrukturar: {}
       },
       parseFrontmatter: true,
     })

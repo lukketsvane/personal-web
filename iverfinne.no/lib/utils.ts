@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 export function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
+  return new Date(date).toLocaleDateString('nn-NO', {
+    day: '2-digit',
     month: 'long',
-    day: 'numeric',
+    year: 'numeric',
   })
 }
 
