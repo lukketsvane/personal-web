@@ -9,9 +9,11 @@ export default async function Home() {
   // Pre-serialize content for ALL posts on the server.
   // Using unstable_cache inside getPostContent makes this very fast after the first run.
   const postsWithContent = await Promise.all(posts.map(async (post) => {
+    const id = post.id;
+    if (!id) return post;
+
     try {
-      if (!post.id) return post;
-      const content = await getPostContent(post.id)
+      const content = await getPostContent(id)
       const serialized = await serialize(content, {
         mdxOptions: {
           remarkPlugins: [remarkGfm],
